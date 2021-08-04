@@ -17,11 +17,11 @@ if __name__ == "__main__":
 
     grouped = flights.groupby("AIRLINE")
     ic(type(grouped))
-    # ic(flights.groupby("AIRLINE")["ARR_DELAY"].agg(np.sqrt))
+    ic(flights.groupby("AIRLINE")["ARR_DELAY"].agg(np.mean))
 
     ## Grouping and aggregating with multiple columns and functions
     ic(flights.groupby(["AIRLINE", "WEEKDAY"])["CANCELLED"].agg("sum"))
-    ic(flights.groupby(["AIRLINE", "WEEKDAY"])["CANCELLED", "DIVERTED"].agg(["sum", "mean"]))
+    ic(flights.groupby(["AIRLINE", "WEEKDAY"])[["CANCELLED", "DIVERTED"]].agg(["sum", "mean"]))
     ic(
         flights.groupby(["ORG_AIR", "DEST_AIR"]).agg(
             {"CANCELLED": ["sum", "mean", "size"], "AIR_TIME": ["mean", "var"]}
