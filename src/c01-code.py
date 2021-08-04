@@ -1,44 +1,46 @@
 import pandas as pd
 
+from icecream import ic
+
 pd.set_option("max_columns", 4, "max_rows", 10)
 
 if __name__ == "__main__":
     movies = pd.read_csv("data/movie.csv")
     movies.head()
 
-    print(movies.index)
-    print(movies.columns)
-    print(movies.values)
+    ic(movies.index)
+    ic(movies.columns)
+    ic(movies.values)
 
-    print(type(movies.index))
-    print(type(movies.columns))
-    print(type(movies.values))
+    ic(type(movies.index))
+    ic(type(movies.columns))
+    ic(type(movies.values))
 
-    print(issubclass(pd.RangeIndex, pd.Index))
+    ic(issubclass(pd.RangeIndex, pd.Index))
 
-    print(movies.index.values)
-    print(movies.columns.values)
+    ic(movies.index.values)
+    ic(movies.columns.values)
 
-    print(movies.dtypes)
-    print(movies.info())
+    ic(movies.dtypes)
+    ic(movies.info())
 
-    print(movies.loc[:, "director_name"])
-    print(movies.iloc[:, 1])
+    ic(movies.loc[:, "director_name"])
+    ic(movies.iloc[:, 1])
 
-    print(
+    ic(
         movies.director_name.index,
         movies.director_name.dtype,
         movies.director_name.size,
         movies.director_name.name,
     )
 
-    print(movies["director_name"].apply(type).unique())
+    ic(movies["director_name"].apply(type).unique())
 
     s_attr_methods = set(dir(pd.Series))
-    print(len(s_attr_methods))
+    ic(len(s_attr_methods))
     df_attr_methods = set(dir(pd.DataFrame))
-    print(len(df_attr_methods))
-    print(len(s_attr_methods & df_attr_methods))
+    ic(len(df_attr_methods))
+    ic(len(s_attr_methods & df_attr_methods))
 
     director = movies["director_name"]
     fb_likes = movies["actor_1_facebook_likes"]
@@ -48,11 +50,11 @@ if __name__ == "__main__":
     fb_likes_filled = fb_likes.fillna(0)
     fb_likes_filled.count()
     fb_likes_dropped = fb_likes.dropna()
-    print(fb_likes_dropped.size)
-    print(director.value_counts(normalize=True).mul(100))
-    print(director.hasnans)
-    print(director.isna().sum())
-    print(fb_likes.fillna(0).astype(int).head())
+    ic(fb_likes_dropped.size)
+    ic(director.value_counts(normalize=True).mul(100))
+    ic(director.hasnans)
+    ic(director.isna().sum())
+    ic(fb_likes.fillna(0).astype(int).head())
 
     idx_map = {
         "Avatar": "Ratava",
@@ -60,7 +62,7 @@ if __name__ == "__main__":
         "Pirates of the Caribbean: At World's End": "POC",
     }
     col_map = {"aspect_ratio": "aspect", "movie_facebook_likes": "fblikes"}
-    print(movies.set_index("movie_title").rename(index=idx_map, columns=col_map).head(3))
+    ic(movies.set_index("movie_title").rename(index=idx_map, columns=col_map).head(3))
 
     ids = movies.index.tolist()
     columns = movies.columns.tolist()
@@ -73,12 +75,12 @@ if __name__ == "__main__":
     columns[-1] = "fbLikes"
     movies.index = ids
     movies.columns = columns
-    print(movies.head(3))
+    ic(movies.head(3))
 
     def to_clean(value):
         return value.strip().lower().replace(" ", "_")
 
-    print(movies.rename(columns=to_clean).head(3))
+    ic(movies.rename(columns=to_clean).head(3))
 
     cols = [col.strip().lower().replace(" ", "_") for col in movies.columns]
     movies.columns = cols
@@ -91,7 +93,7 @@ if __name__ == "__main__":
         "Pirates of the Caribbean: At World's End": "POC",
     }
     col_map = {"aspect_ratio": "aspect", "movie_facebook_likes": "fblikes"}
-    print(movies.rename(index=idx_map, columns=col_map).assign(has_seen=0).head())
+    ic(movies.rename(index=idx_map, columns=col_map).assign(has_seen=0).head())
 
     total = (
         movies["actor_1_facebook_likes"]
@@ -99,7 +101,7 @@ if __name__ == "__main__":
         + movies["actor_3_facebook_likes"]
         + movies["director_facebook_likes"]
     )
-    print(total.head(5))
+    ic(total.head(5))
 
     cols = [
         "actor_1_facebook_likes",
@@ -108,7 +110,7 @@ if __name__ == "__main__":
         "director_facebook_likes",
     ]
     sum_col = movies[cols].sum(axis="columns")
-    print(sum_col.head(5))
+    ic(sum_col.head(5))
 
     movies.assign(total_likes=sum_col).head(5)
 
@@ -119,9 +121,9 @@ if __name__ == "__main__":
 
     movies.assign(total_likes=sum_col)["total_likes"].isna().sum()
 
-    print(movies.assign(total_likes=total)["total_likes"].isna().sum())
+    ic(movies.assign(total_likes=total)["total_likes"].isna().sum())
 
-    print(movies.assign(total_likes=total.fillna(0))["total_likes"].isna().sum())
+    ic(movies.assign(total_likes=total.fillna(0))["total_likes"].isna().sum())
 
     def cast_like_gt_actor_director(df):
         return df["cast_total_facebook_likes"] >= df["total_likes"]
@@ -137,7 +139,7 @@ if __name__ == "__main__":
     )
     actor_sum.head(5)
 
-    print(movies["cast_total_facebook_likes"] >= actor_sum)
+    ic(movies["cast_total_facebook_likes"] >= actor_sum)
     movies["cast_total_facebook_likes"].ge(actor_sum)
     movies["cast_total_facebook_likes"].ge(actor_sum).all()
 
@@ -145,7 +147,7 @@ if __name__ == "__main__":
     pct_like.describe()
     pd.Series(pct_like.values, index=movies["movie_title"].values).head()
     # profit_index = movies.columns.get_loc("gross") + 1
-    # print(profit_index)
+    # ic(profit_index)
 
     # movies.insert(loc=profit_index, column="profit", value=movies["gross"] - movies["budget"])
 
