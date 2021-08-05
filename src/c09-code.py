@@ -17,9 +17,10 @@ if __name__ == "__main__":
 
     grouped = flights.groupby("AIRLINE")
     ic(type(grouped))
-    ic(flights.groupby("AIRLINE")["ARR_DELAY"].agg(np.mean))
+    # np.sqrt is not aggregate function
+    # ic(flights.groupby("AIRLINE")["ARR_DELAY"].agg(np.sqrt))
 
-    ## Grouping and aggregating with multiple columns and functions
+    # Grouping and aggregating with multiple columns and functions
     ic(flights.groupby(["AIRLINE", "WEEKDAY"])["CANCELLED"].agg("sum"))
     ic(flights.groupby(["AIRLINE", "WEEKDAY"])[["CANCELLED", "DIVERTED"]].agg(["sum", "mean"]))
     ic(
@@ -37,299 +38,115 @@ if __name__ == "__main__":
         )
     )
 
-#
-# res = (flights
-#     .groupby(['ORG_AIR', 'DEST_AIR'])
-#     .agg({'CANCELLED':['sum', 'mean', 'size'],
-#           'AIR_TIME':['mean', 'var']})
-# )
-# res.columns = ['_'.join(x) for x in
-#     res.columns.to_flat_index()]
-#
-#
-# # In[14]:
-#
-#
-# res
-#
-#
-# # In[15]:
-#
-#
-# def flatten_cols(df):
-#     df.columns = ['_'.join(x) for x in
-#         df.columns.to_flat_index()]
-#     return df
-#
-#
-# # In[16]:
-#
-#
-# res = (flights
-#     .groupby(['ORG_AIR', 'DEST_AIR'])
-#     .agg({'CANCELLED':['sum', 'mean', 'size'],
-#           'AIR_TIME':['mean', 'var']})
-#     .pipe(flatten_cols)
-# )
-#
-#
-# # In[17]:
-#
-#
-# res
-#
-#
-# # In[18]:
-#
-#
-# res = (flights
-#     .assign(ORG_AIR=flights.ORG_AIR.astype('category'))
-#     .groupby(['ORG_AIR', 'DEST_AIR'])
-#     .agg({'CANCELLED':['sum', 'mean', 'size'],
-#           'AIR_TIME':['mean', 'var']})
-# )
-# res
-#
-#
-# # In[19]:
-#
-#
-# res = (flights
-#     .assign(ORG_AIR=flights.ORG_AIR.astype('category'))
-#     .groupby(['ORG_AIR', 'DEST_AIR'], observed=True)
-#     .agg({'CANCELLED':['sum', 'mean', 'size'],
-#           'AIR_TIME':['mean', 'var']})
-# )
-# res
-#
-#
-# # ## Removing the MultiIndex after grouping
-#
-# # In[20]:
-#
-#
-# flights = pd.read_csv('data/flights.csv')
-# airline_info = (flights
-#     .groupby(['AIRLINE', 'WEEKDAY'])
-#     .agg({'DIST':['sum', 'mean'],
-#           'ARR_DELAY':['min', 'max']})
-#     .astype(int)
-# )
-# airline_info
-#
-#
-# # In[21]:
-#
-#
-# airline_info.columns.get_level_values(0)
-#
-#
-# # In[22]:
-#
-#
-# airline_info.columns.get_level_values(1)
-#
-#
-# # In[23]:
-#
-#
-# airline_info.columns.to_flat_index()
-#
-#
-# # In[24]:
-#
-#
-# airline_info.columns = ['_'.join(x) for x in
-#     airline_info.columns.to_flat_index()]
-#
-#
-# # In[25]:
-#
-#
-# airline_info
-#
-#
-# # In[26]:
-#
-#
-# airline_info.reset_index()
-#
-#
-# # In[27]:
-#
-#
-# (flights
-#     .groupby(['AIRLINE', 'WEEKDAY'])
-#     .agg(dist_sum=pd.NamedAgg(column='DIST', aggfunc='sum'),
-#          dist_mean=pd.NamedAgg(column='DIST', aggfunc='mean'),
-#          arr_delay_min=pd.NamedAgg(column='ARR_DELAY', aggfunc='min'),
-#          arr_delay_max=pd.NamedAgg(column='ARR_DELAY', aggfunc='max'))
-#     .astype(int)
-#     .reset_index()
-# )
-#
-#
-# # ### How it works...
-#
-# # ### There's more...
-#
-# # In[28]:
-#
-#
-# (flights
-#     .groupby(['AIRLINE'], as_index=False)
-#     ['DIST']
-#     .agg('mean')
-#     .round(0)
-# )
-#
-#
-# # ## Grouping with a custom aggregation function
-#
-# # ### How to do it...
-#
-# # In[29]:
-#
-#
-# college = pd.read_csv('data/college.csv')
-# (college
-#     .groupby('STABBR')
-#     ['UGDS']
-#     .agg(['mean', 'std'])
-#     .round(0)
-# )
-#
-#
-# # In[30]:
-#
-#
-# def max_deviation(s):
-#     std_score = (s - s.mean()) / s.std()
-#     return std_score.abs().max()
-#
-#
-# # In[31]:
-#
-#
-# (college
-#     .groupby('STABBR')
-#     ['UGDS']
-#     .agg(max_deviation)
-#     .round(1)
-# )
-#
-#
-# # ### How it works...
-#
-# # ### There's more...
-#
-# # In[32]:
-#
-#
-# (college
-#     .groupby('STABBR')
-#     ['UGDS', 'SATVRMID', 'SATMTMID']
-#     .agg(max_deviation)
-#     .round(1)
-# )
-#
-#
-# # In[33]:
-#
-#
-# (college
-#     .groupby(['STABBR', 'RELAFFIL'])
-#     ['UGDS', 'SATVRMID', 'SATMTMID']
-#     .agg([max_deviation, 'mean', 'std'])
-#     .round(1)
-# )
-#
-#
-# # In[34]:
-#
-#
-# max_deviation.__name__
-#
-#
-# # In[35]:
-#
-#
-# max_deviation.__name__ = 'Max Deviation'
-# (college
-#     .groupby(['STABBR', 'RELAFFIL'])
-#     ['UGDS', 'SATVRMID', 'SATMTMID']
-#     .agg([max_deviation, 'mean', 'std'])
-#     .round(1)
-# )
-#
-#
-# # ## Customizing aggregating functions with *args and **kwargs
-#
-# # ### How to do it...
-#
-# # In[36]:
-#
-#
-# def pct_between_1_3k(s):
-#     return (s
-#         .between(1_000, 3_000)
-#         .mean()
-#         * 100
-#     )
-#
-#
-# # In[37]:
-#
-#
-# (college
-#     .groupby(['STABBR', 'RELAFFIL'])
-#     ['UGDS']
-#     .agg(pct_between_1_3k)
-#     .round(1)
-# )
-#
-#
-# # In[38]:
-#
-#
-# def pct_between(s, low, high):
-#     return s.between(low, high).mean() * 100
-#
-#
-# # In[39]:
-#
-#
-# (college
-#     .groupby(['STABBR', 'RELAFFIL'])
-#     ['UGDS']
-#     .agg(pct_between, 1_000, 10_000)
-#     .round(1)
-# )
-#
-#
-# # ### How it works...
-#
-# # ### There's more...
-#
-# # In[40]:
-#
-#
-# def between_n_m(n, m):
-#     def wrapper(ser):
-#         return pct_between(ser, n, m)
-#     wrapper.__name__ = f'between_{n}_{m}'
-#     return wrapper
-#
-#
-# # In[41]:
-#
-#
-# (college
-#     .groupby(['STABBR', 'RELAFFIL'])
-#     ['UGDS']
-#     .agg([between_n_m(1_000, 10_000), 'max', 'mean'])
-#     .round(1)
-# )
+    res = flights.groupby(["ORG_AIR", "DEST_AIR"]).agg(
+        {"CANCELLED": ["sum", "mean", "size"], "AIR_TIME": ["mean", "var"]}
+    )
+    res.columns = ["_".join(x) for x in res.columns.to_flat_index()]
+    ic(res)
+
+    def flatten_cols(df):
+        df.columns = ["_".join(x) for x in df.columns.to_flat_index()]
+        return df
+
+    res = (
+        flights.groupby(["ORG_AIR", "DEST_AIR"])
+        .agg({"CANCELLED": ["sum", "mean", "size"], "AIR_TIME": ["mean", "var"]})
+        .pipe(flatten_cols)
+    )
+    ic(res)
+
+    res = (
+        flights.assign(ORG_AIR=flights.ORG_AIR.astype("category"))
+        .groupby(["ORG_AIR", "DEST_AIR"])
+        .agg({"CANCELLED": ["sum", "mean", "size"], "AIR_TIME": ["mean", "var"]})
+    )
+    ic(res)
+
+    res = (
+        flights.assign(ORG_AIR=flights.ORG_AIR.astype("category"))
+        .groupby(["ORG_AIR", "DEST_AIR"], observed=True)
+        .agg({"CANCELLED": ["sum", "mean", "size"], "AIR_TIME": ["mean", "var"]})
+    )
+    ic(res)
+
+    # ## Removing the MultiIndex after grouping
+    flights = pd.read_csv("data/flights.csv")
+    airline_info = (
+        flights.groupby(["AIRLINE", "WEEKDAY"])
+        .agg({"DIST": ["sum", "mean"], "ARR_DELAY": ["min", "max"]})
+        .astype(int)
+    )
+    ic(airline_info)
+
+    airline_info.columns.get_level_values(0)
+    airline_info.columns.get_level_values(1)
+    airline_info.columns.to_flat_index()
+    airline_info.columns = ["_".join(x) for x in airline_info.columns.to_flat_index()]
+    ic(airline_info)
+
+    airline_info.reset_index()
+
+    (
+        flights.groupby(["AIRLINE", "WEEKDAY"])
+        .agg(
+            dist_sum=pd.NamedAgg(column="DIST", aggfunc="sum"),
+            dist_mean=pd.NamedAgg(column="DIST", aggfunc="mean"),
+            arr_delay_min=pd.NamedAgg(column="ARR_DELAY", aggfunc="min"),
+            arr_delay_max=pd.NamedAgg(column="ARR_DELAY", aggfunc="max"),
+        )
+        .astype(int)
+        .reset_index()
+    )
+
+    ic(flights.groupby(["AIRLINE"], as_index=False)["DIST"].agg("mean").round(0))
+
+    # Grouping with a custom aggregation function
+    college = pd.read_csv("data/college.csv")
+    ic(college.groupby("STABBR")["UGDS"].agg(["mean", "std"]).round(0))
+
+    def max_deviation(s):
+        std_score = (s - s.mean()) / s.std()
+        return std_score.abs().max()
+
+    ic(college.groupby("STABBR")["UGDS"].agg(max_deviation).round(1))
+    ic(college.groupby("STABBR")[["UGDS", "SATVRMID", "SATMTMID"]].agg(max_deviation).round(1))
+    ic(
+        college.groupby(["STABBR", "RELAFFIL"])[["UGDS", "SATVRMID", "SATMTMID"]]
+        .agg([max_deviation, "mean", "std"])
+        .round(1)
+    )
+
+    ic(max_deviation.__name__)
+    max_deviation.__name__ = "Max Deviation"
+    ic(
+        college.groupby(["STABBR", "RELAFFIL"])[["UGDS", "SATVRMID", "SATMTMID"]]
+        .agg([max_deviation, "mean", "std"])
+        .round(1)
+    )
+
+    # Customizing aggregating functions with *args and **kwargs
+    def pct_between_1_3k(s):
+        return s.between(1_000, 3_000).mean() * 100
+
+    ic(college.groupby(["STABBR", "RELAFFIL"])["UGDS"].agg(pct_between_1_3k).round(1))
+
+    def pct_between(s, low, high):
+        return s.between(low, high).mean() * 100
+
+    ic(college.groupby(["STABBR", "RELAFFIL"])["UGDS"].agg(pct_between, 1_000, 10_000).round(1))
+
+    def between_n_m(n, m):
+        def wrapper(ser):
+            return pct_between(ser, n, m)
+
+        wrapper.__name__ = f"between_{n}_{m}"
+        return wrapper
+
+    ic(
+        college.groupby(["STABBR", "RELAFFIL"])["UGDS"]
+        .agg([between_n_m(1_000, 10_000), "max", "mean"])
+        .round(1)
+    )
 #
 #
 # # ## Examining the groupby object
