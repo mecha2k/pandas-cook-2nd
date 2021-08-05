@@ -30,7 +30,7 @@ if __name__ == "__main__":
     ic(names)
 
     names = pd.read_csv("data/names.csv")
-    names.append({"Name": "Aria", "Age": 1})
+    # names.append({"Name": "Aria", "Age": 1})
     names.append({"Name": "Aria", "Age": 1}, ignore_index=True)
     names.index = ["Canada", "Canada", "USA", "USA"]
     ic(names)
