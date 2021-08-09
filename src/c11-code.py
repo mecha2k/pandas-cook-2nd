@@ -16,66 +16,66 @@ pd.set_option(
 )
 
 if __name__ == "__main__":
-    # names = pd.read_csv("data/names.csv")
-    # ic(names)
-    #
-    # new_data_list = ["Aria", 1]
-    # names.loc[4] = new_data_list
-    # ic(names)
-    # names.loc["five"] = ["Zach", 3]
-    # ic(names)
-    # names.loc[len(names)] = {"Name": "Zayd", "Age": 2}
-    # ic(names)
-    # names.loc[len(names)] = pd.Series({"Age": 32, "Name": "Dean"})
-    # ic(names)
+    names = pd.read_csv("data/names.csv")
+    ic(names)
 
-    # names = pd.read_csv("data/names.csv")
-    # names.index = ["Canada", "Canada", "USA", "USA"]
-    # ic(names)
-    # # names.append({"Name": "Aria", "Age": 1})
-    # names = names.append({"Name": "Aria", "Age": 1}, ignore_index=True)
-    # ic(names)
-    # s = pd.Series({"Name": "Zach", "Age": 3}, name=len(names))
-    # names = names.append(s, ignore_index=True)
-    # ic(names)
-    #
-    # s1 = pd.Series({"Name": "Zach", "Age": 3}, name=len(names))
-    # s2 = pd.Series({"Name": "Zayd", "Age": 2}, name="USA")
-    # names = names.append([s1, s2])
-    # ic(names)
+    new_data_list = ["Aria", 1]
+    names.loc[4] = new_data_list
+    ic(names)
+    names.loc["five"] = ["Zach", 3]
+    ic(names)
+    names.loc[len(names)] = {"Name": "Zayd", "Age": 2}
+    ic(names)
+    names.loc[len(names)] = pd.Series({"Age": 32, "Name": "Dean"})
+    ic(names)
 
-    # bball_16 = pd.read_csv("data/baseball16.csv")
-    # ic(bball_16)
-    #
-    # data_dict = bball_16.iloc[0].to_dict()
-    # ic(data_dict)
-    #
-    # new_data_dict = {k: "" if isinstance(v, str) else np.nan for k, v in data_dict.items()}
-    # ic(new_data_dict)
+    names = pd.read_csv("data/names.csv")
+    names.index = ["Canada", "Canada", "USA", "USA"]
+    ic(names)
+    # names.append({"Name": "Aria", "Age": 1})
+    names = names.append({"Name": "Aria", "Age": 1}, ignore_index=True)
+    ic(names)
+    s = pd.Series({"Name": "Zach", "Age": 3}, name=len(names))
+    names = names.append(s, ignore_index=True)
+    ic(names)
 
-    # random_data = []
-    # for i in range(1000):
-    #     d = dict()
-    #     for k, v in data_dict.items():
-    #         if isinstance(v, str):
-    #             d[k] = np.random.choice(list("abcde"))
-    #         else:
-    #             d[k] = np.random.randint(10)
-    #     random_data.append(pd.Series(d, name=i + len(bball_16)))
-    # ic(random_data[0])
+    s1 = pd.Series({"Name": "Zach", "Age": 3}, name=len(names))
+    s2 = pd.Series({"Name": "Zayd", "Age": 2}, name="USA")
+    names = names.append([s1, s2])
+    ic(names)
 
-    # # Concatenating multiple DataFrames together
-    # stocks_2016 = pd.read_csv("data/stocks_2016.csv", index_col="Symbol")
-    # stocks_2017 = pd.read_csv("data/stocks_2017.csv", index_col="Symbol")
-    # ic(stocks_2016)
-    # ic(stocks_2017)
-    #
-    # s_list = [stocks_2016, stocks_2017]
-    # ic(pd.concat(s_list))
-    # ic(pd.concat(s_list, keys=["2016", "2017"], names=["Year", "Symbol"]))
-    # ic(pd.concat(s_list, keys=["2016", "2017"], axis="columns", names=["Year", None]))
-    # ic(pd.concat(s_list, join="inner", keys=["2016", "2017"], axis="columns", names=["Year", None]))
-    # ic(stocks_2016.append(stocks_2017))
+    bball_16 = pd.read_csv("data/baseball16.csv")
+    ic(bball_16)
+
+    data_dict = bball_16.iloc[0].to_dict()
+    ic(data_dict)
+
+    new_data_dict = {k: "" if isinstance(v, str) else np.nan for k, v in data_dict.items()}
+    ic(new_data_dict)
+
+    random_data = []
+    for i in range(1000):
+        d = dict()
+        for k, v in data_dict.items():
+            if isinstance(v, str):
+                d[k] = np.random.choice(list("abcde"))
+            else:
+                d[k] = np.random.randint(10)
+        random_data.append(pd.Series(d, name=i + len(bball_16)))
+    ic(random_data[0])
+
+    # Concatenating multiple DataFrames together
+    stocks_2016 = pd.read_csv("data/stocks_2016.csv", index_col="Symbol")
+    stocks_2017 = pd.read_csv("data/stocks_2017.csv", index_col="Symbol")
+    ic(stocks_2016)
+    ic(stocks_2017)
+
+    s_list = [stocks_2016, stocks_2017]
+    ic(pd.concat(s_list))
+    ic(pd.concat(s_list, keys=["2016", "2017"], names=["Year", "Symbol"]))
+    ic(pd.concat(s_list, keys=["2016", "2017"], axis="columns", names=["Year", None]))
+    ic(pd.concat(s_list, join="inner", keys=["2016", "2017"], axis="columns", names=["Year", None]))
+    ic(stocks_2016.append(stocks_2017))
 
     # Understanding the differences between concat, join, and merge
     years = 2016, 2017, 2018
