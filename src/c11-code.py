@@ -132,9 +132,11 @@ if __name__ == "__main__":
 
     df_list = list()
     for filename in glob.glob("data/gas prices/*.csv"):
-        df_list.append(pd.read_csv(filename, index_col="Week", parse_dates=["Week"]))
+        df_list.append(pd.read_csv(filename, index_col="Week", parse_dates=True))
     gas = pd.concat(df_list, axis="columns")
-    ic(gas)
+    gas.info()
+    ic(gas.head())
+    ic(gas.index[0])
 
     # # Connecting to SQL databases
     # engine = create_engine("sqlite:///data/chinook.db")
