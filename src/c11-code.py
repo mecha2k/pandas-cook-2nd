@@ -5,7 +5,7 @@ import glob
 from icecream import ic
 from IPython.display import display_html
 
-# from sqlalchemy import create_engine
+from sqlalchemy import create_engine
 
 pd.set_option("max_rows", 10, "max_columns", 7, "max_colwidth", 9)
 pd.set_option(
@@ -138,56 +138,57 @@ if __name__ == "__main__":
     ic(gas.head())
     ic(gas.index[0])
 
-    # # Connecting to SQL databases
-    # engine = create_engine("sqlite:///data/chinook.db")
-    # tracks = pd.read_sql_table("tracks", engine)
-    # ic(tracks)
-    #
-    # ic(
-    #     pd.read_sql_table("genres", engine)
-    #     .merge(tracks[["GenreId", "Milliseconds"]], on="GenreId", how="left")
-    #     .drop("GenreId", axis="columns")
-    # )
-    # ic(
-    #     pd.read_sql_table("genres", engine)
-    #     .merge(tracks[["GenreId", "Milliseconds"]], on="GenreId", how="left")
-    #     .drop("GenreId", axis="columns")
-    #     .groupby("Name")["Milliseconds"]
-    #     .mean()
-    #     .pipe(lambda s_: pd.to_timedelta(s_, unit="ms"))
-    #     .dt.floor("s")
-    #     .sort_values()
-    # )
-    #
-    # cust = pd.read_sql_table("customers", engine, columns=["CustomerId", "FirstName", "LastName"])
-    # invoice = pd.read_sql_table("invoices", engine, columns=["InvoiceId", "CustomerId"])
-    # ii = pd.read_sql_table("invoice_items", engine, columns=["InvoiceId", "UnitPrice", "Quantity"])
-    # (cust.merge(invoice, on="CustomerId").merge(ii, on="InvoiceId"))
-    # ic(
-    #     cust.merge(invoice, on="CustomerId")
-    #     .merge(ii, on="InvoiceId")
-    #     .assign(Total=lambda df_: df_.Quantity * df_.UnitPrice)
-    #     .groupby(["CustomerId", "FirstName", "LastName"])["Total"]
-    #     .sum()
-    #     .sort_values(ascending=False)
-    # )
+    # Connecting to SQL databases
+    engine = create_engine("sqlite:///data/chinook.db")
+    tracks = pd.read_sql_table("tracks", engine)
+    ic(tracks)
+
+    ic(
+        pd.read_sql_table("genres", engine)
+        .merge(tracks[["GenreId", "Milliseconds"]], on="GenreId", how="left")
+        .drop("GenreId", axis="columns")
+    )
+    ic(
+        pd.read_sql_table("genres", engine)
+        .merge(tracks[["GenreId", "Milliseconds"]], on="GenreId", how="left")
+        .drop("GenreId", axis="columns")
+        .groupby("Name")["Milliseconds"]
+        .mean()
+        .pipe(lambda s_: pd.to_timedelta(s_, unit="ms"))
+        .dt.floor("s")
+        .sort_values()
+    )
+
+    cust = pd.read_sql_table("customers", engine, columns=["CustomerId", "FirstName", "LastName"])
+    invoice = pd.read_sql_table("invoices", engine, columns=["InvoiceId", "CustomerId"])
+    ii = pd.read_sql_table("invoice_items", engine, columns=["InvoiceId", "UnitPrice", "Quantity"])
+    (cust.merge(invoice, on="CustomerId").merge(ii, on="InvoiceId"))
+    ic(
+        cust.merge(invoice, on="CustomerId")
+        .merge(ii, on="InvoiceId")
+        .assign(Total=lambda df_: df_.Quantity * df_.UnitPrice)
+        .groupby(["CustomerId", "FirstName", "LastName"])["Total"]
+        .sum()
+        .sort_values(ascending=False)
+    )
 
     # sql_string1 = """
-    # SELECT
-    #     Name,
-    #     time(avg(Milliseconds) / 1000, 'unixepoch') as avg_time
-    # FROM (
-    #       SELECT
-    #           g.Name,
-    #           t.Milliseconds
-    #       FROM
-    #           genres as g
-    #       JOIN
-    #           tracks as t on
-    #           g.genreid == t.genreid
-    #      )
-    # GROUP BY Name
-    # ORDER BY avg_time"""
+    #     SELECT
+    #         Name,
+    #         time(avg(Milliseconds) / 1000, 'unixepoch') as avg_time
+    #     FROM (
+    #           SELECT
+    #               g.Name,
+    #               t.Milliseconds
+    #           FROM
+    #               genres as g
+    #           JOIN
+    #               tracks as t on
+    #               g.genreid == t.genreid
+    #          )
+    #     GROUP BY Name
+    #     ORDER BY avg_time
+    # """
     # pd.read_sql_query(sql_string1, engine)
 
     # sql_string2 = '''
