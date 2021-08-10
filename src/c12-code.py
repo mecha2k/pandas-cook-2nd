@@ -235,17 +235,17 @@ if __name__ == "__main__":
     ic(crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"].sum())
     ic(crime.resample("QS")["IS_CRIME", "IS_TRAFFIC"].sum())
     ic(crime.loc["2012-4-1":"2012-6-30", ["IS_CRIME", "IS_TRAFFIC"]].sum())
-    ic(crime.groupby(pd.Grouper(freq="Q"))["IS_CRIME", "IS_TRAFFIC"].sum())
+    ic(crime.groupby(pd.Grouper(freq="Q"))[["IS_CRIME", "IS_TRAFFIC"]].sum())
 
     fig, ax = plt.subplots(figsize=(16, 4))
-    crime.groupby(pd.Grouper(freq="Q"))["IS_CRIME", "IS_TRAFFIC"].sum().plot(
+    crime.groupby(pd.Grouper(freq="Q"))[["IS_CRIME", "IS_TRAFFIC"]].sum().plot(
         color=["black", "lightgrey"], ax=ax, title="Denver Crimes and Traffic Accidents"
     )
     fig.savefig("images/ch12/c12-crimes2.png", dpi=300)
     plt.close()
 
-    (crime.resample("Q").sum())
-    (crime_sort.resample("QS-MAR")["IS_CRIME", "IS_TRAFFIC"].sum())
+    ic(crime.resample("Q").sum())
+    ic(crime_sort.resample("QS-MAR")["IS_CRIME", "IS_TRAFFIC"].sum())
 
     crime_begin = crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"].sum().iloc[0]
 
@@ -261,14 +261,15 @@ if __name__ == "__main__":
 
     crime = pd.read_hdf("data/crime.h5", "crime")
     ic(crime)
-    ic(crime["REPORTED_DATE"].dt.weekday_name.value_counts())
+    ic(crime["REPORTED_DATE"].dt.day_name().value_counts())
 
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     title = "Denver Crimes and Traffic Accidents per Weekday"
     fig, ax = plt.subplots(figsize=(6, 4))
     (
         crime["REPORTED_DATE"]
-        .dt.weekday_name.value_counts()
+        .dt.day_name()
+        .value_counts()
         .reindex(days)
         .plot.barh(title=title, ax=ax)
     )
@@ -283,7 +284,7 @@ if __name__ == "__main__":
         crime.groupby(
             [
                 crime["REPORTED_DATE"].dt.year.rename("year"),
-                crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+                crime["REPORTED_DATE"].dt.day_name().rename("day"),
             ]
         ).size()
     )
@@ -291,7 +292,7 @@ if __name__ == "__main__":
         crime.groupby(
             [
                 crime["REPORTED_DATE"].dt.year.rename("year"),
-                crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+                crime["REPORTED_DATE"].dt.day_name().rename("day"),
             ]
         )
         .size()
@@ -320,7 +321,7 @@ if __name__ == "__main__":
     crime.groupby(
         [
             crime["REPORTED_DATE"].dt.year.rename("year"),
-            crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+            crime["REPORTED_DATE"].dt.day_name().rename("day"),
         ]
     ).size().unstack("day").pipe(update_2017).reindex(columns=days)
 
@@ -329,7 +330,7 @@ if __name__ == "__main__":
         crime.groupby(
             [
                 crime["REPORTED_DATE"].dt.year.rename("year"),
-                crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+                crime["REPORTED_DATE"].dt.day_name().rename("day"),
             ]
         )
         .size()
@@ -341,247 +342,125 @@ if __name__ == "__main__":
     fig.savefig("images/ch12/c12-crimes6.png", dpi=300, bbox_inches="tight")
     plt.close()
 
-    # denver_pop = pd.read_csv("data/denver_pop.csv", index_col="Year")
-    # denver_pop
-    #
-    #
-    # # In[277]:
-    #
-    #
-    # den_100k = denver_pop.div(100_000).squeeze()
-    # normalized = (
-    #     crime.groupby(
-    #         [
-    #             crime["REPORTED_DATE"].dt.year.rename("year"),
-    #             crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
-    #         ]
-    #     )
-    #     .size()
-    #     .unstack("day")
-    #     .pipe(update_2017)
-    #     .reindex(columns=days)
-    #     .div(den_100k, axis="index")
-    #     .astype(int)
-    # )
-    # normalized
-    #
-    #
-    # # In[278]:
-    #
-    #
-    # import seaborn as sns
-    #
-    # fig, ax = plt.subplots(figsize=(6, 4))
-    # sns.heatmap(normalized, cmap="Greys", ax=ax)
-    # fig.savefig("images/ch12/c12-crimes7.png", dpi=300, bbox_inches="tight")
-    #
-    #
-    # # ### How it works...
-    #
-    # # In[279]:
-    #
-    #
-    # (crime["REPORTED_DATE"].dt.weekday_name.value_counts().loc[days])
-    #
-    #
-    # # In[280]:
-    #
-    #
-    # (
-    #     crime.assign(year=crime.REPORTED_DATE.dt.year, day=crime.REPORTED_DATE.dt.weekday_name).pipe(
-    #         lambda df_: pd.crosstab(df_.year, df_.day)
-    #     )
-    # )
-    #
-    #
-    # # In[281]:
-    #
-    #
-    # (
-    #     crime.groupby(
-    #         [
-    #             crime["REPORTED_DATE"].dt.year.rename("year"),
-    #             crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
-    #         ]
-    #     )
-    #     .size()
-    #     .unstack("day")
-    #     .pipe(update_2017)
-    #     .reindex(columns=days)
-    # ) / den_100k
-    #
-    #
-    # # ### There's more...
-    #
-    # # In[282]:
-    #
-    #
-    # days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    # crime_type = "auto-theft"
-    # normalized = (
-    #     crime.query("OFFENSE_CATEGORY_ID == @crime_type")
-    #     .groupby(
-    #         [
-    #             crime["REPORTED_DATE"].dt.year.rename("year"),
-    #             crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
-    #         ]
-    #     )
-    #     .size()
-    #     .unstack("day")
-    #     .pipe(update_2017)
-    #     .reindex(columns=days)
-    #     .div(den_100k, axis="index")
-    #     .astype(int)
-    # )
-    # normalized
-    #
-    #
-    # # ## Grouping with anonymous functions with a DatetimeIndex
-    #
-    # # ### How to do it...
-    #
-    # # In[283]:
-    #
-    #
-    # crime = pd.read_hdf("data/crime.h5", "crime").set_index("REPORTED_DATE").sort_index()
-    #
-    #
-    # # In[284]:
-    #
-    #
-    # common_attrs = set(dir(crime.index)) & set(dir(pd.Timestamp))
-    # [attr for attr in common_attrs if attr[0] != "_"]
-    #
-    #
-    # # In[285]:
-    #
-    #
-    # crime.index.weekday_name.value_counts()
-    #
-    #
-    # # In[286]:
-    #
-    #
-    # (crime.groupby(lambda idx: idx.weekday_name)["IS_CRIME", "IS_TRAFFIC"].sum())
-    #
-    #
-    # # In[287]:
-    #
-    #
-    # funcs = [lambda idx: idx.round("2h").hour, lambda idx: idx.year]
-    # (crime.groupby(funcs)["IS_CRIME", "IS_TRAFFIC"].sum().unstack())
-    #
-    #
-    # # In[288]:
-    #
-    #
-    # funcs = [lambda idx: idx.round("2h").hour, lambda idx: idx.year]
-    # (
-    #     crime.groupby(funcs)["IS_CRIME", "IS_TRAFFIC"]
-    #     .sum()
-    #     .unstack()
-    #     .style.highlight_max(color="lightgrey")
-    # )
-    #
-    #
-    # # ### How it works...
-    #
-    # # ## Grouping by a Timestamp and another column
-    #
-    # # ### How to do it...
-    #
-    # # In[289]:
-    #
-    #
-    # employee = pd.read_csv(
-    #     "data/employee.csv", parse_dates=["JOB_DATE", "HIRE_DATE"], index_col="HIRE_DATE"
-    # )
-    # employee
-    #
-    #
-    # # In[290]:
-    #
-    #
-    # (employee.groupby("GENDER")["BASE_SALARY"].mean().round(-2))
-    #
-    #
-    # # In[291]:
-    #
-    #
-    # (employee.resample("10AS")["BASE_SALARY"].mean().round(-2))
-    #
-    #
-    # # In[292]:
-    #
-    #
-    # (employee.groupby("GENDER").resample("10AS")["BASE_SALARY"].mean().round(-2))
-    #
-    #
-    # # In[293]:
-    #
-    #
-    # (employee.groupby("GENDER").resample("10AS")["BASE_SALARY"].mean().round(-2).unstack("GENDER"))
-    #
-    #
-    # # In[294]:
-    #
-    #
-    # employee[employee["GENDER"] == "Male"].index.min()
-    #
-    #
-    # # In[295]:
-    #
-    #
-    # employee[employee["GENDER"] == "Female"].index.min()
-    #
-    #
-    # # In[296]:
-    #
-    #
-    # (employee.groupby(["GENDER", pd.Grouper(freq="10AS")])["BASE_SALARY"].mean().round(-2))
-    #
-    #
-    # # In[297]:
-    #
-    #
-    # (
-    #     employee.groupby(["GENDER", pd.Grouper(freq="10AS")])["BASE_SALARY"]
-    #     .mean()
-    #     .round(-2)
-    #     .unstack("GENDER")
-    # )
-    #
-    #
-    # # ### How it works...
-    #
-    # # ### There's more...
-    #
-    # # In[298]:
-    #
-    #
-    # sal_final = (
-    #     employee.groupby(["GENDER", pd.Grouper(freq="10AS")])["BASE_SALARY"]
-    #     .mean()
-    #     .round(-2)
-    #     .unstack("GENDER")
-    # )
-    # years = sal_final.index.year
-    # years_right = years + 9
-    # sal_final.index = years.astype(str) + "-" + years_right.astype(str)
-    # sal_final
-    #
-    #
-    # # In[299]:
-    #
-    #
-    # cuts = pd.cut(employee.index.year, bins=5, precision=0)
-    # cuts.categories.values
-    #
-    #
-    # # In[300]:
-    #
-    #
-    # (employee.groupby([cuts, "GENDER"])["BASE_SALARY"].mean().unstack("GENDER").round(-2))
-    #
-    #
-    # # In[ ]:
+    denver_pop = pd.read_csv("data/denver_pop.csv", index_col="Year")
+    ic(denver_pop)
+
+    den_100k = denver_pop.div(100_000).squeeze()
+    normalized = (
+        crime.groupby(
+            [
+                crime["REPORTED_DATE"].dt.year.rename("year"),
+                crime["REPORTED_DATE"].dt.day_name().rename("day"),
+            ]
+        )
+        .size()
+        .unstack("day")
+        .pipe(update_2017)
+        .reindex(columns=days)
+        .div(den_100k, axis="index")
+        .astype(int)
+    )
+    ic(normalized)
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.heatmap(normalized, cmap="Greys", ax=ax)
+    fig.savefig("images/ch12/c12-crimes7.png", dpi=300, bbox_inches="tight")
+
+    ic(crime["REPORTED_DATE"].dt.day_name().value_counts().loc[days])
+    ic(
+        crime.assign(year=crime.REPORTED_DATE.dt.year, day=crime.REPORTED_DATE.dt.day_name()).pipe(
+            lambda df_: pd.crosstab(df_.year, df_.day)
+        )
+    )
+    ic(
+        (
+            crime.groupby(
+                [
+                    crime["REPORTED_DATE"].dt.year.rename("year"),
+                    crime["REPORTED_DATE"].dt.day_name().rename("day"),
+                ]
+            )
+            .size()
+            .unstack("day")
+            .pipe(update_2017)
+            .reindex(columns=days)
+        )
+        / den_100k
+    )
+
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    crime_type = "auto-theft"
+    normalized = (
+        crime.query("OFFENSE_CATEGORY_ID == @crime_type")
+        .groupby(
+            [
+                crime["REPORTED_DATE"].dt.year.rename("year"),
+                crime["REPORTED_DATE"].dt.day_name().rename("day"),
+            ]
+        )
+        .size()
+        .unstack("day")
+        .pipe(update_2017)
+        .reindex(columns=days)
+        .div(den_100k, axis="index")
+        .astype(int)
+    )
+    ic(normalized)
+
+    ## Grouping with anonymous functions with a DatetimeIndex
+    crime = pd.read_hdf("data/crime.h5", "crime").set_index("REPORTED_DATE").sort_index()
+    common_attrs = set(dir(crime.index)) & set(dir(pd.Timestamp))
+    ic([attr for attr in common_attrs if attr[0] != "_"])
+    ic(crime.index.day_name().value_counts())
+    ic(crime.groupby(lambda idx: idx.day_name())[["IS_CRIME", "IS_TRAFFIC"]].sum())
+
+    funcs = [lambda idx: idx.round("2h").hour, lambda idx: idx.year]
+    ic(crime.groupby(funcs)[["IS_CRIME", "IS_TRAFFIC"]].sum().unstack())
+
+    funcs = [lambda idx: idx.round("2h").hour, lambda idx: idx.year]
+    ic(
+        crime.groupby(funcs)[["IS_CRIME", "IS_TRAFFIC"]]
+        .sum()
+        .unstack()
+        .style.highlight_max(color="lightgrey")
+    )
+
+    ## Grouping by a Timestamp and another column
+    employee = pd.read_csv(
+        "data/employee.csv", parse_dates=["JOB_DATE", "HIRE_DATE"], index_col="HIRE_DATE"
+    )
+    ic(employee)
+    ic(employee.groupby("GENDER")["BASE_SALARY"].mean().round(-2))
+    ic(employee.resample("10AS")["BASE_SALARY"].mean().round(-2))
+    ic(employee.groupby("GENDER").resample("10AS")["BASE_SALARY"].mean().round(-2))
+    ic(
+        employee.groupby("GENDER")
+        .resample("10AS")["BASE_SALARY"]
+        .mean()
+        .round(-2)
+        .unstack("GENDER")
+    )
+    ic(employee[employee["GENDER"] == "Male"].index.min())
+    ic(employee[employee["GENDER"] == "Female"].index.min())
+    ic(employee.groupby(["GENDER", pd.Grouper(freq="10AS")])["BASE_SALARY"].mean().round(-2))
+    ic(
+        employee.groupby(["GENDER", pd.Grouper(freq="10AS")])["BASE_SALARY"]
+        .mean()
+        .round(-2)
+        .unstack("GENDER")
+    )
+
+    sal_final = (
+        employee.groupby(["GENDER", pd.Grouper(freq="10AS")])["BASE_SALARY"]
+        .mean()
+        .round(-2)
+        .unstack("GENDER")
+    )
+    years = sal_final.index.year
+    years_right = years + 9
+    sal_final.index = years.astype(str) + "-" + years_right.astype(str)
+    ic(sal_final)
+
+    cuts = pd.cut(employee.index.year, bins=5, precision=0)
+    ic(cuts.categories.values)
+    ic(employee.groupby([cuts, "GENDER"])["BASE_SALARY"].mean().unstack("GENDER").round(-2))
