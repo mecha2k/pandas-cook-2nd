@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 import datetime
 
 from icecream import ic
@@ -214,278 +216,131 @@ if __name__ == "__main__":
     weekly_crimes = crime_sort.groupby(pd.Grouper(freq="W")).size()
     ic(weekly_crimes)
 
-    # # ### How it works...
-    #
-    # # In[248]:
-    #
-    #
-    # r = crime_sort.resample("W")
-    # [attr for attr in dir(r) if attr[0].islower()]
-    #
-    #
-    # # ### There's more...
-    #
-    # # In[249]:
-    #
-    #
-    # crime = pd.read_hdf("data/crime.h5", "crime")
-    # weekly_crimes2 = crime.resample("W", on="REPORTED_DATE").size()
-    # weekly_crimes2.equals(weekly_crimes)
-    #
-    #
-    # # In[250]:
-    #
-    #
-    # weekly_crimes_gby2 = crime.groupby(pd.Grouper(key="REPORTED_DATE", freq="W")).size()
-    # weekly_crimes2.equals(weekly_crimes)
-    #
-    #
-    # # In[251]:
-    #
-    #
-    # import matplotlib.pyplot as plt
-    #
-    # fig, ax = plt.subplots(figsize=(16, 4))
-    # weekly_crimes.plot(title="All Denver Crimes", ax=ax)
-    # fig.savefig("/tmp/c12-crimes.png", dpi=300)
-    #
-    #
-    # # ## Aggregating weekly crime and traffic accidents separately
-    #
-    # # ### How to do it...
-    #
-    # # In[252]:
-    #
-    #
-    # crime = pd.read_hdf("data/crime.h5", "crime").set_index("REPORTED_DATE").sort_index()
-    #
-    #
-    # # In[253]:
-    #
-    #
-    # (crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"].sum())
-    #
-    #
-    # # In[254]:
-    #
-    #
-    # (crime.resample("QS")["IS_CRIME", "IS_TRAFFIC"].sum())
-    #
-    #
-    # # In[255]:
-    #
-    #
-    # (crime.loc["2012-4-1":"2012-6-30", ["IS_CRIME", "IS_TRAFFIC"]].sum())
-    #
-    #
-    # # In[256]:
-    #
-    #
-    # (crime.groupby(pd.Grouper(freq="Q"))["IS_CRIME", "IS_TRAFFIC"].sum())
-    #
-    #
-    # # In[257]:
-    #
-    #
-    # fig, ax = plt.subplots(figsize=(16, 4))
-    # (
-    #     crime.groupby(pd.Grouper(freq="Q"))["IS_CRIME", "IS_TRAFFIC"]
-    #     .sum()
-    #     .plot(color=["black", "lightgrey"], ax=ax, title="Denver Crimes and Traffic Accidents")
-    # )
-    # fig.savefig("/tmp/c12-crimes2.png", dpi=300)
-    #
-    #
-    # # ### How it works...
-    #
-    # # In[258]:
-    #
-    #
-    # (crime.resample("Q").sum())
-    #
-    #
-    # # In[259]:
-    #
-    #
-    # (crime_sort.resample("QS-MAR")["IS_CRIME", "IS_TRAFFIC"].sum())
-    #
-    #
-    # # ### There's more...
-    #
-    # # In[260]:
-    #
-    #
-    # crime_begin = crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"].sum().iloc[0]
-    #
-    #
-    # # In[261]:
-    #
-    #
-    # fig, ax = plt.subplots(figsize=(16, 4))
-    # (
-    #     crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"]
-    #     .sum()
-    #     .div(crime_begin)
-    #     .sub(1)
-    #     .round(2)
-    #     .mul(100)
-    #     .plot.bar(
-    #         color=["black", "lightgrey"], ax=ax, title="Denver Crimes and Traffic Accidents % Increase"
-    #     )
-    # )
-    #
-    #
-    # # In[262]:
-    #
-    #
-    # fig.autofmt_xdate()
-    # fig.savefig("/tmp/c12-crimes3.png", dpi=300, bbox_inches="tight")
-    #
-    #
-    # # ## Measuring crime by weekday and year
-    #
-    # # ### How to do it...
-    #
-    # # In[263]:
-    #
-    #
-    # crime = pd.read_hdf("data/crime.h5", "crime")
-    # crime
-    #
-    #
-    # # In[264]:
-    #
-    #
-    # (crime["REPORTED_DATE"].dt.weekday_name.value_counts())
-    #
-    #
-    # # In[265]:
-    #
-    #
-    # days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    # title = "Denver Crimes and Traffic Accidents per Weekday"
-    # fig, ax = plt.subplots(figsize=(6, 4))
-    # (crime["REPORTED_DATE"].dt.weekday_name.value_counts().reindex(days).plot.barh(title=title, ax=ax))
-    # fig.savefig("/tmp/c12-crimes4.png", dpi=300, bbox_inches="tight")
-    #
-    #
-    # # In[266]:
-    #
-    #
-    # title = "Denver Crimes and Traffic Accidents per Year"
-    # fig, ax = plt.subplots(figsize=(6, 4))
-    # (crime["REPORTED_DATE"].dt.year.value_counts().plot.barh(title=title, ax=ax))
-    # fig.savefig("/tmp/c12-crimes5.png", dpi=300, bbox_inches="tight")
-    #
-    #
-    # # In[267]:
-    #
-    #
-    # (
-    #     crime.groupby(
-    #         [
-    #             crime["REPORTED_DATE"].dt.year.rename("year"),
-    #             crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
-    #         ]
-    #     ).size()
-    # )
-    #
-    #
-    # # In[268]:
-    #
-    #
-    # (
-    #     crime.groupby(
-    #         [
-    #             crime["REPORTED_DATE"].dt.year.rename("year"),
-    #             crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
-    #         ]
-    #     )
-    #     .size()
-    #     .unstack("day")
-    # )
-    #
-    #
-    # # In[269]:
-    #
-    #
-    # criteria = crime["REPORTED_DATE"].dt.year == 2017
-    # crime.loc[criteria, "REPORTED_DATE"].dt.dayofyear.max()
-    #
-    #
-    # # In[270]:
-    #
-    #
-    # round(272 / 365, 3)
-    #
-    #
-    # # In[271]:
-    #
-    #
-    # crime_pct = (
-    #     crime["REPORTED_DATE"].dt.dayofyear.le(272).groupby(crime.REPORTED_DATE.dt.year).mean().round(3)
-    # )
-    #
-    #
-    # # In[272]:
-    #
-    #
-    # crime_pct
-    #
-    #
-    # # In[273]:
-    #
-    #
-    # crime_pct.loc[2012:2016].median()
-    #
-    #
-    # # In[274]:
-    #
-    #
-    # def update_2017(df_):
-    #     df_.loc[2017] = df_.loc[2017].div(0.748).astype("int")
-    #     return df_
-    #
-    #
-    # (
-    #     crime.groupby(
-    #         [
-    #             crime["REPORTED_DATE"].dt.year.rename("year"),
-    #             crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
-    #         ]
-    #     )
-    #     .size()
-    #     .unstack("day")
-    #     .pipe(update_2017)
-    #     .reindex(columns=days)
-    # )
-    #
-    #
-    # # In[275]:
-    #
-    #
-    # import seaborn as sns
-    #
-    # fig, ax = plt.subplots(figsize=(6, 4))
-    # table = (
-    #     crime.groupby(
-    #         [
-    #             crime["REPORTED_DATE"].dt.year.rename("year"),
-    #             crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
-    #         ]
-    #     )
-    #     .size()
-    #     .unstack("day")
-    #     .pipe(update_2017)
-    #     .reindex(columns=days)
-    # )
-    # sns.heatmap(table, cmap="Greys", ax=ax)
-    # fig.savefig("/tmp/c12-crimes6.png", dpi=300, bbox_inches="tight")
-    #
-    #
-    # # In[276]:
-    #
-    #
+    r = crime_sort.resample("W")
+    ic([attr for attr in dir(r) if attr[0].islower()])
+
+    crime = pd.read_hdf("data/crime.h5", "crime")
+    weekly_crimes2 = crime.resample("W", on="REPORTED_DATE").size()
+    ic(weekly_crimes2.equals(weekly_crimes))
+    weekly_crimes_gby2 = crime.groupby(pd.Grouper(key="REPORTED_DATE", freq="W")).size()
+    ic(weekly_crimes2.equals(weekly_crimes))
+
+    fig, ax = plt.subplots(figsize=(16, 4))
+    weekly_crimes.plot(title="All Denver Crimes", ax=ax)
+    fig.savefig("images/ch12/c12-crimes.png", dpi=300)
+    plt.close()
+
+    ## Aggregating weekly crime and traffic accidents separately
+    crime = pd.read_hdf("data/crime.h5", "crime").set_index("REPORTED_DATE").sort_index()
+    ic(crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"].sum())
+    ic(crime.resample("QS")["IS_CRIME", "IS_TRAFFIC"].sum())
+    ic(crime.loc["2012-4-1":"2012-6-30", ["IS_CRIME", "IS_TRAFFIC"]].sum())
+    ic(crime.groupby(pd.Grouper(freq="Q"))["IS_CRIME", "IS_TRAFFIC"].sum())
+
+    fig, ax = plt.subplots(figsize=(16, 4))
+    crime.groupby(pd.Grouper(freq="Q"))["IS_CRIME", "IS_TRAFFIC"].sum().plot(
+        color=["black", "lightgrey"], ax=ax, title="Denver Crimes and Traffic Accidents"
+    )
+    fig.savefig("images/ch12/c12-crimes2.png", dpi=300)
+    plt.close()
+
+    (crime.resample("Q").sum())
+    (crime_sort.resample("QS-MAR")["IS_CRIME", "IS_TRAFFIC"].sum())
+
+    crime_begin = crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"].sum().iloc[0]
+
+    fig, ax = plt.subplots(figsize=(16, 4))
+    crime.resample("Q")["IS_CRIME", "IS_TRAFFIC"].sum().div(crime_begin).sub(1).round(2).mul(
+        100
+    ).plot.bar(
+        color=["black", "lightgrey"], ax=ax, title="Denver Crimes and Traffic Accidents % Increase"
+    )
+
+    fig.autofmt_xdate()
+    fig.savefig("images/ch12/c12-crimes3.png", dpi=300, bbox_inches="tight")
+
+    crime = pd.read_hdf("data/crime.h5", "crime")
+    ic(crime)
+    ic(crime["REPORTED_DATE"].dt.weekday_name.value_counts())
+
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    title = "Denver Crimes and Traffic Accidents per Weekday"
+    fig, ax = plt.subplots(figsize=(6, 4))
+    (
+        crime["REPORTED_DATE"]
+        .dt.weekday_name.value_counts()
+        .reindex(days)
+        .plot.barh(title=title, ax=ax)
+    )
+    fig.savefig("images/ch12/c12-crimes4.png", dpi=300, bbox_inches="tight")
+    title = "Denver Crimes and Traffic Accidents per Year"
+    fig, ax = plt.subplots(figsize=(6, 4))
+    (crime["REPORTED_DATE"].dt.year.value_counts().plot.barh(title=title, ax=ax))
+    fig.savefig("images/ch12/c12-crimes5.png", dpi=300, bbox_inches="tight")
+    plt.close()
+
+    ic(
+        crime.groupby(
+            [
+                crime["REPORTED_DATE"].dt.year.rename("year"),
+                crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+            ]
+        ).size()
+    )
+    ic(
+        crime.groupby(
+            [
+                crime["REPORTED_DATE"].dt.year.rename("year"),
+                crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+            ]
+        )
+        .size()
+        .unstack("day")
+    )
+
+    criteria = crime["REPORTED_DATE"].dt.year == 2017
+    crime.loc[criteria, "REPORTED_DATE"].dt.dayofyear.max()
+
+    ic(round(272 / 365, 3))
+
+    crime_pct = (
+        crime["REPORTED_DATE"]
+        .dt.dayofyear.le(272)
+        .groupby(crime.REPORTED_DATE.dt.year)
+        .mean()
+        .round(3)
+    )
+    ic(crime_pct)
+    ic(crime_pct.loc[2012:2016].median())
+
+    def update_2017(df_):
+        df_.loc[2017] = df_.loc[2017].div(0.748).astype("int")
+        return df_
+
+    crime.groupby(
+        [
+            crime["REPORTED_DATE"].dt.year.rename("year"),
+            crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+        ]
+    ).size().unstack("day").pipe(update_2017).reindex(columns=days)
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    table = (
+        crime.groupby(
+            [
+                crime["REPORTED_DATE"].dt.year.rename("year"),
+                crime["REPORTED_DATE"].dt.weekday_name.rename("day"),
+            ]
+        )
+        .size()
+        .unstack("day")
+        .pipe(update_2017)
+        .reindex(columns=days)
+    )
+    sns.heatmap(table, cmap="Greys", ax=ax)
+    fig.savefig("images/ch12/c12-crimes6.png", dpi=300, bbox_inches="tight")
+    plt.close()
+
     # denver_pop = pd.read_csv("data/denver_pop.csv", index_col="Year")
     # denver_pop
     #
@@ -518,7 +373,7 @@ if __name__ == "__main__":
     #
     # fig, ax = plt.subplots(figsize=(6, 4))
     # sns.heatmap(normalized, cmap="Greys", ax=ax)
-    # fig.savefig("/tmp/c12-crimes7.png", dpi=300, bbox_inches="tight")
+    # fig.savefig("images/ch12/c12-crimes7.png", dpi=300, bbox_inches="tight")
     #
     #
     # # ### How it works...

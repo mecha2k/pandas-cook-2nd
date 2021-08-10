@@ -45,7 +45,7 @@ if __name__ == "__main__":
     plt.ylabel("Y axis")
     plt.title("Line Plot")
     plt.suptitle("Figure Title", size=14, y=1.03)
-    fig.savefig("images/c13-fig1.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-fig1.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig = Figure(figsize=(15, 3))
@@ -59,29 +59,29 @@ if __name__ == "__main__":
     ax.set_title("Line Plot")
     fig.suptitle("Figure Title", size=14, y=1.03)
     display(fig)
-    fig.savefig("images/c13-fig2.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-fig2.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(15, 3))
     ax.plot(x, y)
     ax.set(xlim=(0, 10), ylim=(-3, 8), xlabel="X axis", ylabel="Y axis", title="Line Plot")
     fig.suptitle("Figure Title", size=20, y=1.03)
-    fig.savefig("images/c13-fig3.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-fig3.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    fig.savefig("images/c13-step2.png", dpi=300)
+    fig.savefig("images/ch13/c13-step2.png", dpi=300)
     ic(type(fig))
     ic(type(ax))
     fig.get_size_inches()
     fig.set_size_inches(14, 4)
-    fig.savefig("images/c13-step4.png", dpi=300)
+    fig.savefig("images/ch13/c13-step4.png", dpi=300)
     ic(fig)
     ic(fig.axes)
     ic(fig.axes[0] is ax)
     fig.set_facecolor(".7")
     ax.set_facecolor(".5")
-    fig.savefig("images/c13-step7.png", dpi=300, facecolor=".7")
+    fig.savefig("images/ch13/c13-step7.png", dpi=300, facecolor=".7")
     ic(fig)
     ax_children = ax.get_children()
     ic(ax_children)
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     spine_left.set_linewidth(5)
     spine_bottom = spines["bottom"]
     spine_bottom.set_visible(False)
-    fig.savefig("images/c13-step10.png", dpi=300, facecolor=".7")
+    fig.savefig("images/ch13/c13-step10.png", dpi=300, facecolor=".7")
     ic(fig)
 
     ax.xaxis.grid(True, which="major", linewidth=2, color="black", linestyle="--")
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     ax.set_ylabel("Y Axis", family="Verdana", fontsize=20)
     ax.set_yticks([0.1, 0.9])
     ax.set_yticklabels(["point 1", "point 9"], rotation=45)
-    fig.savefig("images/c13-step11.png", dpi=300, facecolor=".7")
+    fig.savefig("images/ch13/c13-step11.png", dpi=300, facecolor=".7")
     plt.close()
 
     plot_objects = plt.subplots(nrows=1, ncols=1)
@@ -109,11 +109,11 @@ if __name__ == "__main__":
 
     fig = plot_objects[0]
     ax = plot_objects[1]
-    fig.savefig("images/c13-1-works1.png", dpi=300)
+    fig.savefig("images/ch13/c13-1-works1.png", dpi=300)
     plt.close()
 
     fig, axs = plt.subplots(2, 4)
-    fig.savefig("images/c13-1-works2.png", dpi=300)
+    fig.savefig("images/ch13/c13-1-works2.png", dpi=300)
     plt.close()
 
     ic(axs)
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     ax.set_ylabel("Snow Depth (in)", color=white)
     ax.set_title("2009-2010", color=white, fontweight="bold")
     ax.fill_between(data.index, data, color=white)
-    fig.savefig("images/c13-alta1.png", dpi=300, facecolor=blue)
+    fig.savefig("images/ch13/c13-alta1.png", dpi=300, facecolor=blue)
     plt.close()
 
     blue = "#99ddee"
@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
     fig.suptitle("Alta Snowfall", color=white, fontweight="bold")
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    fig.savefig("images/c13-alta2.png", dpi=300, facecolor=blue)
+    fig.savefig("images/ch13/c13-alta2.png", dpi=300, facecolor=blue)
     plt.close()
 
     years = range(2009, 2019)
@@ -211,7 +211,7 @@ if __name__ == "__main__":
 
     fig.suptitle("Alta Snowfall", color=white, fontweight="bold")
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    fig.savefig("images/c13-alta3.png", dpi=300, facecolor=blue)
+    fig.savefig("images/ch13/c13-alta3.png", dpi=300, facecolor=blue)
     plt.close()
 
     ic(
@@ -252,7 +252,7 @@ if __name__ == "__main__":
 
     fig.suptitle("Alta Snowfall", color=white, fontweight="bold")
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    fig.savefig("images/c13-alta4.png", dpi=300, facecolor=blue)
+    fig.savefig("images/ch13/c13-alta4.png", dpi=300, facecolor=blue)
     plt.close()
 
     df = pd.DataFrame(
@@ -263,11 +263,11 @@ if __name__ == "__main__":
 
     color = [".2", ".7"]
     ax = df.plot.bar(color=color, figsize=(16, 4))
-    ax.get_figure().savefig("images/c13-pdemo-bar1.png", dpi=300, bbox_inches="tight")
+    ax.get_figure().savefig("images/ch13/c13-pdemo-bar1.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     ax = df.plot.kde(color=color, figsize=(16, 4))
-    ax.get_figure().savefig("images/c13-pdemo-kde1.png")
+    ax.get_figure().savefig("images/ch13/c13-pdemo-kde1.png")
     plt.close()
 
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 4))
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     df.plot.line(ax=ax1, title="Line plot")
     df.plot.scatter(x="Apples", y="Oranges", ax=ax2, title="Scatterplot")
     df.plot.bar(color=color, ax=ax3, title="Bar plot")
-    fig.savefig("images/c13-pdemo-scat.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-pdemo-scat.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 4))
@@ -283,14 +283,14 @@ if __name__ == "__main__":
     df.plot.kde(color=color, ax=ax1, title="KDE plot")
     df.plot.box(ax=ax2, title="Boxplot")
     df.plot.hist(color=color, ax=ax3, title="Histogram")
-    fig.savefig("images/c13-pdemo-kde2.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-pdemo-kde2.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 4))
     df.sort_values("Apples").plot.line(x="Apples", y="Oranges", ax=ax1)
     df.plot.bar(x="Apples", y="Oranges", ax=ax2)
     df.plot.kde(x="Apples", ax=ax3)
-    fig.savefig("images/c13-pdemo-kde3.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-pdemo-kde3.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     ## Visualizing the flights dataset
@@ -326,7 +326,7 @@ if __name__ == "__main__":
 
     flights["DIST"].plot.kde(ax=ax5, xlim=(0, 3000), title="Distance KDE")
     flights["ARR_DELAY"].plot.hist(ax=ax6, title="Arrival Delay", range=(0, 200))
-    fig.savefig("images/c13-uni1.png")
+    fig.savefig("images/ch13/c13-uni1.png")
     plt.close()
 
     df_date = flights[["MONTH", "DAY"]].assign(
@@ -341,7 +341,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(8, 6))
     fc = flights.resample("W").size()
     fc.plot.line(ax=ax, title="Flights per Week", grid=True)
-    fig.savefig("images/c13-ts1.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-ts1.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     def interp_lt_n(df_, n=600):
@@ -362,7 +362,7 @@ if __name__ == "__main__":
         arrowprops=dict(),
     )
     ax.set_title("Flights per Week (Interpolated Missing Data)")
-    fig.savefig("images/c13-ts2.png")
+    fig.savefig("images/ch13/c13-ts2.png")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(16, 4))
@@ -374,7 +374,7 @@ if __name__ == "__main__":
         .tail(10)
         .plot.bar(y="mean", rot=0, legend=False, ax=ax, title="Average Distance per Destination")
     )
-    fig.savefig("images/c13-bar1.png")
+    fig.savefig("images/ch13/c13-bar1.png")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         .dropna()
         .plot.scatter(x="DIST", y="AIR_TIME", ax=ax, alpha=0.1, s=1)
     )
-    fig.savefig("images/c13-scat1.png")
+    fig.savefig("images/ch13/c13-scat1.png")
     plt.close()
 
     ic(
@@ -412,7 +412,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(10, 6))
     short.pivot(columns="BIN")["SCORE"].fillna(0).plot.box(ax=ax)
     ax.set_title("Z-Scores for Distance Groups")
-    fig.savefig("images/c13-box2.png")
+    fig.savefig("images/ch13/c13-box2.png")
     plt.close()
 
     mask = short.assign(SCORE=scores).pipe(lambda df_: df_.SCORE.abs() > 6)
@@ -439,7 +439,7 @@ if __name__ == "__main__":
     plt.setp(ax.get_xticklines(), visible=False)
     ax.set_xlabel("")
     ax.set_title("Flight Time vs Distance with Outliers")
-    fig.savefig("images/c13-scat3.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-scat3.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     ## Stacking area charts to discover emerging trends
@@ -479,7 +479,7 @@ if __name__ == "__main__":
     ax.annotate(xy=(0.5, 0.55), s="Energy Data Science", color="k", **kwargs)
     ax.annotate(xy=(0.83, 0.07), s="Data Science", color="k", **kwargs)
     ax.annotate(xy=(0.86, 0.78), s="Machine Learning", color="w", **kwargs)
-    fig.savefig("images/c13-stacked1.png")
+    fig.savefig("images/ch13/c13-stacked1.png")
     plt.close()
 
     ## Understanding the differences between seaborn and pandas
@@ -488,23 +488,23 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.countplot(y="DEPARTMENT", data=employee, ax=ax)
-    fig.savefig("images/c13-sns1.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns1.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(8, 6))
     (employee["DEPARTMENT"].value_counts().plot.barh(ax=ax))
-    fig.savefig("images/c13-sns2.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns2.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.barplot(y="RACE", x="BASE_SALARY", data=employee, ax=ax)
-    fig.savefig("images/c13-sns3.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns3.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(8, 6))
     (employee.groupby("RACE", sort=False)["BASE_SALARY"].mean().plot.barh(rot=0, width=0.8, ax=ax))
     ax.set_xlabel("Mean Salary")
-    fig.savefig("images/c13-sns4.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns4.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(18, 6))
@@ -524,7 +524,7 @@ if __name__ == "__main__":
             "White",
         ],
     )
-    fig.savefig("images/c13-sns5.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns5.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(18, 6))
@@ -535,12 +535,12 @@ if __name__ == "__main__":
         .sort_values("Female")
         .plot.bar(rot=0, ax=ax, width=0.8, cmap="viridis")
     )
-    fig.savefig("images/c13-sns6.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns6.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.boxplot(x="GENDER", y="BASE_SALARY", data=employee, hue="RACE", palette="Greys", ax=ax)
-    fig.savefig("images/c13-sns7.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns7.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, axs = plt.subplots(1, 2, figsize=(12, 6), sharey=True)
@@ -554,7 +554,7 @@ if __name__ == "__main__":
         )
         ax.set_title(g + " Salary")
         ax.set_xlabel("")
-    fig.savefig("images/c13-sns8.png", bbox_inches="tight")
+    fig.savefig("images/ch13/c13-sns8.png", bbox_inches="tight")
     plt.close()
 
     ## Multivariate analysis with seaborn Grids
@@ -569,7 +569,7 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.regplot(x="YEARS_EXPERIENCE", y="BASE_SALARY", data=emp, ax=ax)
-    fig.savefig("images/c13-scat4.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-scat4.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     grid = sns.lmplot(
@@ -581,7 +581,7 @@ if __name__ == "__main__":
         data=emp,
     )
     grid.fig.set_size_inches(8, 6)
-    grid.fig.savefig("images/c13-scat5.png", dpi=300, bbox_inches="tight")
+    grid.fig.savefig("images/ch13/c13-scat5.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     grid = sns.lmplot(
@@ -596,7 +596,7 @@ if __name__ == "__main__":
         data=emp,
     )
     grid.set(ylim=(20000, 120000))
-    grid.fig.savefig("images/c13-scat6.png", dpi=300, bbox_inches="tight")
+    grid.fig.savefig("images/ch13/c13-scat6.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     deps = emp["DEPARTMENT"].value_counts().index[:2]
@@ -613,7 +613,7 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.violinplot(x="YEARS_EXPERIENCE", y="GENDER", data=common_depts)
-    fig.savefig("images/c13-vio1.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-vio1.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     grid = sns.catplot(
@@ -626,7 +626,7 @@ if __name__ == "__main__":
         data=emp2,
         kind="violin",
     )
-    grid.fig.savefig("images/c13-vio2.png", dpi=300, bbox_inches="tight")
+    grid.fig.savefig("images/ch13/c13-vio2.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     ## Uncovering Simpson's Paradox in the diamonds dataset with seaborn
@@ -648,11 +648,11 @@ if __name__ == "__main__":
     sns.barplot(x="cut", y="price", data=dia2, ax=ax2)
     sns.barplot(x="clarity", y="price", data=dia2, ax=ax3)
     fig.suptitle("Price Decreasing with Increasing Quality?")
-    fig.savefig("images/c13-bar4.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-bar4.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     grid = sns.catplot(x="color", y="price", col="clarity", col_wrap=4, data=dia2, kind="bar")
-    grid.fig.savefig("images/c13-bar5.png", dpi=300, bbox_inches="tight")
+    grid.fig.savefig("images/ch13/c13-bar5.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(14, 4))
@@ -660,7 +660,7 @@ if __name__ == "__main__":
     sns.barplot(x="cut", y="carat", data=dia2, ax=ax2)
     sns.barplot(x="clarity", y="carat", data=dia2, ax=ax3)
     fig.suptitle("Diamond size decreases with quality")
-    fig.savefig("images/c13-bar6.png", dpi=300, bbox_inches="tight")
+    fig.savefig("images/ch13/c13-bar6.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     dia2 = dia2.assign(carat_category=pd.qcut(dia2.carat, 5))
@@ -677,11 +677,11 @@ if __name__ == "__main__":
         palette=greys,
     )
     grid.fig.suptitle("Diamond price by size, color and clarity", y=1.02, size=20)
-    grid.fig.savefig("images/c13-bar7.png", dpi=300, bbox_inches="tight")
+    grid.fig.savefig("images/ch13/c13-bar7.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     g = sns.PairGrid(dia2, height=5, x_vars=["color", "cut", "clarity"], y_vars=["price"])
     g.map(sns.barplot)
     g.fig.suptitle("Replication of Step 3 with PairGrid", y=1.02)
-    g.fig.savefig("images/c13-bar8.png", dpi=300, bbox_inches="tight")
+    g.fig.savefig("images/ch13/c13-bar8.png", dpi=300, bbox_inches="tight")
     plt.close()
