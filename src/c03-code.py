@@ -4,7 +4,7 @@ import zipfile
 import sqlite3
 import sqlalchemy as sa
 import json
-
+from io import StringIO
 from icecream import ic
 
 pd.set_option("max_columns", 4, "max_rows", 10, "max_colwidth", 12)
@@ -42,18 +42,16 @@ if __name__ == "__main__":
     )
     ic(beatles)
 
-    # from io import StringIO
-    #
-    # fout = StringIO()
-    # beatles.to_csv(fout)  # use a filename instead of fout
-    # print(fout.getvalue())
-    # _ = fout.seek(0)
-    # pd.read_csv(fout)
-    # _ = fout.seek(0)
-    # pd.read_csv(fout, index_col=0)
-    # fout = StringIO()
-    # beatles.to_csv(fout, index=False)
-    # print(fout.getvalue())
+    fout = StringIO()
+    beatles.to_csv(fout)  # use a filename instead of fout
+    ic(fout.getvalue())
+    _ = fout.seek(0)
+    pd.read_csv(fout)
+    _ = fout.seek(0)
+    pd.read_csv(fout, index_col=0)
+    fout = StringIO()
+    beatles.to_csv(fout, index=False)
+    ic(fout.getvalue())
 
     diamonds = pd.read_csv("data/diamonds.csv", nrows=1000)
     ic(diamonds)
@@ -137,7 +135,7 @@ if __name__ == "__main__":
         return f"processed {df.size} items"
 
     for chunk in diamonds_iter:
-        process(chunk)
+        ic(process(chunk))
 
     diamonds.price.memory_usage()
     diamonds.price.memory_usage(index=False)
@@ -164,9 +162,11 @@ if __name__ == "__main__":
     ic(autos)
     ic(autos.modifiedOn.dtype)
     ic(autos.modifiedOn.head(2))
-    ic(pd.to_datetime(autos.modifiedOn)[0])
+    # ic(pd.to_datetime(autos.modifiedOn)[0])
+    autos_date = pd.to_datetime(autos.modifiedOn)
 
     autos = pd.read_csv("data/vehicles.csv.zip", parse_dates=["modifiedOn"], low_memory=False)
+    # autos = pd.read_csv("data/vehicles.csv.zip", parse_dates=autos_date.to_list(), low_memory=False)
     ic(autos.modifiedOn)
 
     with zipfile.ZipFile("data/kaggle-survey-2018.zip") as z:
