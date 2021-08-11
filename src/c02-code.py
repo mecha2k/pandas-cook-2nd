@@ -14,10 +14,8 @@ if __name__ == "__main__":
     ic(len(movies))
     ic(movies.count())
     ic(movies.describe().T)
-
     movie_actor_director = movies[["actor_1_name", "actor_2_name", "actor_3_name", "director_name"]]
     ic(movie_actor_director.head())
-
     ic(type(movies[["director_name"]]))
     ic(type(movies.loc[:, "director_name"]))
     ic(type(movies.loc[:, ["director_name"]]))
@@ -36,7 +34,6 @@ if __name__ == "__main__":
     ic(movies.select_dtypes(include=["int", "object"]).head())
     ic(movies.select_dtypes(exclude="float").head())
     ic(movies.filter(like="fb").head())
-
     ic(movies.filter(items=cols).head())
     ic(movies.filter(regex=r"\d").head())
 
@@ -53,57 +50,29 @@ if __name__ == "__main__":
     )
     ic(set(movies.columns) == set(new_col_order))
     ic(movies[new_col_order].head())
+    ic(movies.describe(percentiles=[0.01, 0.3, 0.99]).T)
+    ic(movies.min(skipna=False))
 
+    ## Chaining DataFrame Methods
+    movies = pd.read_csv("data/movie.csv")
 
-# movies.describe(percentiles=[.01, .3, .99]).T
-# # ### How it works\...
-#
-# # ### There\'s more\...
-#
+    def shorten(col):
+        return col.replace("facebook_likes", "fb").replace("_for_reviews", "")
 
-# movies.min(skipna=False)
-# # ## Chaining DataFrame Methods
-#
-# # ### How to do it\...
-#
+    movies = movies.rename(columns=shorten)
+    movies.isnull().head()
 
-# movies = pd.read_csv('data/movie.csv')
-# def shorten(col):
-#     return (col.replace('facebook_likes', 'fb')
-#                .replace('_for_reviews', '')
-#     )
-# movies = movies.rename(columns=shorten)
-# movies.isnull().head()
+    ic(movies.isnull().sum().head())
+    ic(movies.isnull().sum().sum())
+    ic(movies.isnull().any().any())
+    ic(movies.isnull().dtypes.value_counts())
+    ic(movies[["color", "movie_title", "color"]].max())
 
-# (movies
-#    .isnull()
-#    .sum()
-#    .head()
-# )
+    with pd.option_context("max_colwidth", 20):
+        ic(movies.select_dtypes(["object"]).fillna("").max())
+    with pd.option_context("max_colwidth", 20):
+        ic(movies.select_dtypes(["object"]).fillna("").max())
 
-# movies.isnull().sum().sum()
-
-# movies.isnull().any().any()
-# # ### How it works\...
-#
-
-# movies.isnull().get_dtype_counts()
-# # ### There\'s more\...
-#
-
-# movies[['color', 'movie_title', 'color']].max()
-
-# with pd.option_context('max_colwidth', 20):
-#     movies.select_dtypes(['object']).fillna('').max()
-
-# with pd.option_context('max_colwidth', 20):
-#     (movies
-#         .select_dtypes(['object'])
-#         .fillna('')
-#         .max()
-#     )
-# # ### See also
-#
 # # ## DataFrame Operations
 #
 
