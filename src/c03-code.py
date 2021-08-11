@@ -198,78 +198,78 @@ if __name__ == "__main__":
     # fnames = pd.read_sql(sql, con)
     # ic(fnames)
 
-    encoded = json.dumps(people)
-    ic(encoded)
-    ic(json.loads(encoded))
-
-    beatles = pd.read_json(encoded)
-    ic(beatles)
-    records = beatles.to_json(orient="records")
-    ic(records)
-    ic(pd.read_json(records, orient="records"))
-    split = beatles.to_json(orient="split")
-    ic(split)
-    ic(pd.read_json(split, orient="split"))
-    index = beatles.to_json(orient="index")
-    ic(index)
-    ic(pd.read_json(index, orient="index"))
-    values = beatles.to_json(orient="values")
-    ic(values)
-    ic(pd.read_json(values, orient="values"))
-    ic(
-        pd.read_json(values, orient="values").rename(
-            columns=dict(enumerate(["first", "last", "birth"]))
-        )
-    )
-    table = beatles.to_json(orient="table")
-    ic(table)
-    pd.read_json(table, orient="table")
-    output = beat.to_dict()
-    ic(output)
-    output["version"] = "0.4.1"
-    ic(json.dumps(output))
-
-    url = "https://en.wikipedia.org/wiki/The_Beatles_discography"
-    dfs = pd.read_html(url)
-    ic(len(dfs))
-    ic(dfs[0])
-    url = "https://en.wikipedia.org/wiki/The_Beatles_discography"
-    dfs = pd.read_html(url, match="List of studio albums", na_values="—")
-    ic(len(dfs))
-    ic(dfs[0].columns)
-    url = "https://en.wikipedia.org/wiki/The_Beatles_discography"
-    dfs = pd.read_html(url, match="List of studio albums", na_values="—", header=[0, 1])
-    ic(len(dfs))
-    ic(dfs[0])
-    ic(dfs[0].columns)
-    df = dfs[0]
-    df.columns = [
-        "Title",
-        "Release",
-        "UK",
-        "AUS",
-        "CAN",
-        "FRA",
-        "GER",
-        "NOR",
-        "US",
-        "Certifications",
-    ]
-    ic(df)
-    res = (
-        df.pipe(lambda df_: df_[~df_.Title.str.startswith("Released")])
-        .iloc[:-1]
-        .assign(
-            release_date=lambda df_: pd.to_datetime(
-                df_.Release.str.extract(r"Released: (.*) Label")[0].str.replace(r"\[E\]", "")
-            ),
-            label=lambda df_: df_.Release.str.extract(r"Label: (.*)"),
-        )
-        .loc[:, ["Title", "UK", "AUS", "CAN", "FRA", "GER", "NOR", "US", "release_date", "label"]]
-    )
-    ic(res)
-
-    url = "https://github.com/mattharrison/datasets/blob/master/data/anscombes.csv"
-    dfs = pd.read_html(url, attrs={"class": "csv-data"})
-    ic(len(dfs))
-    ic(dfs[0])
+    # encoded = json.dumps(people)
+    # ic(encoded)
+    # ic(json.loads(encoded))
+    #
+    # beatles = pd.read_json(encoded)
+    # ic(beatles)
+    # records = beatles.to_json(orient="records")
+    # ic(records)
+    # ic(pd.read_json(records, orient="records"))
+    # split = beatles.to_json(orient="split")
+    # ic(split)
+    # ic(pd.read_json(split, orient="split"))
+    # index = beatles.to_json(orient="index")
+    # ic(index)
+    # ic(pd.read_json(index, orient="index"))
+    # values = beatles.to_json(orient="values")
+    # ic(values)
+    # ic(pd.read_json(values, orient="values"))
+    # ic(
+    #     pd.read_json(values, orient="values").rename(
+    #         columns=dict(enumerate(["first", "last", "birth"]))
+    #     )
+    # )
+    # table = beatles.to_json(orient="table")
+    # ic(table)
+    # pd.read_json(table, orient="table")
+    # output = beat.to_dict()
+    # ic(output)
+    # output["version"] = "0.4.1"
+    # ic(json.dumps(output))
+    #
+    # url = "https://en.wikipedia.org/wiki/The_Beatles_discography"
+    # dfs = pd.read_html(url)
+    # ic(len(dfs))
+    # ic(dfs[0])
+    # url = "https://en.wikipedia.org/wiki/The_Beatles_discography"
+    # dfs = pd.read_html(url, match="List of studio albums", na_values="—")
+    # ic(len(dfs))
+    # ic(dfs[0].columns)
+    # url = "https://en.wikipedia.org/wiki/The_Beatles_discography"
+    # dfs = pd.read_html(url, match="List of studio albums", na_values="—", header=[0, 1])
+    # ic(len(dfs))
+    # ic(dfs[0])
+    # ic(dfs[0].columns)
+    # df = dfs[0]
+    # df.columns = [
+    #     "Title",
+    #     "Release",
+    #     "UK",
+    #     "AUS",
+    #     "CAN",
+    #     "FRA",
+    #     "GER",
+    #     "NOR",
+    #     "US",
+    #     "Certifications",
+    # ]
+    # ic(df)
+    # res = (
+    #     df.pipe(lambda df_: df_[~df_.Title.str.startswith("Released")])
+    #     .iloc[:-1]
+    #     .assign(
+    #         release_date=lambda df_: pd.to_datetime(
+    #             df_.Release.str.extract(r"Released: (.*) Label")[0].str.replace(r"\[E\]", "")
+    #         ),
+    #         label=lambda df_: df_.Release.str.extract(r"Label: (.*)"),
+    #     )
+    #     .loc[:, ["Title", "UK", "AUS", "CAN", "FRA", "GER", "NOR", "US", "release_date", "label"]]
+    # )
+    # ic(res)
+    #
+    # url = "https://github.com/mattharrison/datasets/blob/master/data/anscombes.csv"
+    # dfs = pd.read_html(url, attrs={"class": "csv-data"})
+    # ic(len(dfs))
+    # ic(dfs[0])
