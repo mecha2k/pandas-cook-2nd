@@ -163,15 +163,15 @@ if __name__ == "__main__":
     autos = pd.read_csv("data/vehicles.csv.zip", low_memory=False)
     ic(autos)
     ic(autos.modifiedOn.dtype)
-    ic(autos.modifiedOn)
-    ic(pd.to_datetime(autos.modifiedOn))
+    ic(autos.modifiedOn.head(2))
+    ic(pd.to_datetime(autos.modifiedOn)[0])
 
-    autos = pd.read_csv("data/vehicles.csv.zip", parse_dates=["modifiedOn"])  # doctest: +SKIP
+    autos = pd.read_csv("data/vehicles.csv.zip", parse_dates=["modifiedOn"], low_memory=False)
     ic(autos.modifiedOn)
 
     with zipfile.ZipFile("data/kaggle-survey-2018.zip") as z:
-        ic("\n".join(z.namelist()))
-        kag = pd.read_csv(z.open("multipleChoiceResponses.csv"))
+        ic(" ".join(z.namelist()))
+        kag = pd.read_csv(z.open("multipleChoiceResponses.csv"), low_memory=False)
         kag_questions = kag.iloc[0]
         survey = kag.iloc[1:]
     ic(survey.head(2).T)
