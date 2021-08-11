@@ -176,59 +176,65 @@ if __name__ == "__main__":
         survey = kag.iloc[1:]
     ic(survey.head(2).T)
 
-    # con = sqlite3.connect('data/beat.db')
-    # with con:
-    #     cur = con.cursor()
-    #     cur.execute("""DROP TABLE Band""")
-    #     cur.execute("""CREATE TABLE Band(id INTEGER PRIMARY KEY,
-    #         fname TEXT, lname TEXT, birthyear INT)""")
-    #     cur.execute("""INSERT INTO Band VALUES(
-    #         0, 'Paul', 'McCartney', 1942)""")
-    #     cur.execute("""INSERT INTO Band VALUES(
-    #         1, 'John', 'Lennon', 1940)""")
-    #     _ = con.commit()
+    con = sqlite3.connect("data/beat.db")
+    with con:
+        cur = con.cursor()
+        cur.execute("""DROP TABLE Band""")
+        cur.execute(
+            """CREATE TABLE Band(id INTEGER PRIMARY KEY,
+            fname TEXT, lname TEXT, birthyear INT)"""
+        )
+        cur.execute(
+            """INSERT INTO Band VALUES(
+            0, 'Paul', 'McCartney', 1942)"""
+        )
+        cur.execute(
+            """INSERT INTO Band VALUES(
+            1, 'John', 'Lennon', 1940)"""
+        )
+        con.commit()
 
-    # engine = sa.create_engine("sqlite:///data/beat.db", echo=True)
-    # sa_connection = engine.connect()
-    #
-    # beat = pd.read_sql("Band", sa_connection, index_col="id")
-    # ic(beat)
-    #
-    # sql = """SELECT fname, birthyear from Band"""
-    # fnames = pd.read_sql(sql, con)
-    # ic(fnames)
+    engine = sa.create_engine("sqlite:///data/beat.db", echo=True)
+    sa_connection = engine.connect()
 
-    # encoded = json.dumps(people)
-    # ic(encoded)
-    # ic(json.loads(encoded))
-    #
-    # beatles = pd.read_json(encoded)
-    # ic(beatles)
-    # records = beatles.to_json(orient="records")
-    # ic(records)
-    # ic(pd.read_json(records, orient="records"))
-    # split = beatles.to_json(orient="split")
-    # ic(split)
-    # ic(pd.read_json(split, orient="split"))
-    # index = beatles.to_json(orient="index")
-    # ic(index)
-    # ic(pd.read_json(index, orient="index"))
-    # values = beatles.to_json(orient="values")
-    # ic(values)
-    # ic(pd.read_json(values, orient="values"))
-    # ic(
-    #     pd.read_json(values, orient="values").rename(
-    #         columns=dict(enumerate(["first", "last", "birth"]))
-    #     )
-    # )
-    # table = beatles.to_json(orient="table")
-    # ic(table)
-    # pd.read_json(table, orient="table")
-    # output = beat.to_dict()
-    # ic(output)
-    # output["version"] = "0.4.1"
-    # ic(json.dumps(output))
-    #
+    beat = pd.read_sql("Band", sa_connection, index_col="id")
+    ic(beat)
+
+    sql = """SELECT fname, birthyear from Band"""
+    fnames = pd.read_sql(sql, con)
+    ic(fnames)
+
+    encoded = json.dumps(people)
+    ic(encoded)
+    ic(json.loads(encoded))
+
+    beatles = pd.read_json(encoded)
+    ic(beatles)
+    records = beatles.to_json(orient="records")
+    ic(records)
+    ic(pd.read_json(records, orient="records"))
+    split = beatles.to_json(orient="split")
+    ic(split)
+    ic(pd.read_json(split, orient="split"))
+    index = beatles.to_json(orient="index")
+    ic(index)
+    ic(pd.read_json(index, orient="index"))
+    values = beatles.to_json(orient="values")
+    ic(values)
+    ic(pd.read_json(values, orient="values"))
+    ic(
+        pd.read_json(values, orient="values").rename(
+            columns=dict(enumerate(["first", "last", "birth"]))
+        )
+    )
+    table = beatles.to_json(orient="table")
+    ic(table)
+    pd.read_json(table, orient="table")
+    output = beat.to_dict()
+    ic(output)
+    output["version"] = "0.4.1"
+    ic(json.dumps(output))
+
     # url = "https://en.wikipedia.org/wiki/The_Beatles_discography"
     # dfs = pd.read_html(url)
     # ic(len(dfs))
