@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from icecream import ic
 
@@ -51,7 +52,9 @@ if __name__ == "__main__":
     ic(set(movies.columns) == set(new_col_order))
     ic(movies[new_col_order].head())
     ic(movies.describe(percentiles=[0.01, 0.3, 0.99]).T)
-    ic(movies.min(skipna=False))
+    # Dropping of nuisance columns in DataFrame reductions(with 'numeric_only=None') is deprecated
+    # ic(movies.min(skipna=False))
+    ic(movies.apply(pd.to_numeric, args=["coerce"]).min(skipna=False))
 
     ## Chaining DataFrame Methods
     movies = pd.read_csv("data/movie.csv")
@@ -60,173 +63,105 @@ if __name__ == "__main__":
         return col.replace("facebook_likes", "fb").replace("_for_reviews", "")
 
     movies = movies.rename(columns=shorten)
-    movies.isnull().head()
-
+    ic(movies.isna().head())
+    ic(movies.isna().sum())
+    ic(movies.isna().sum().sum())
+    ic(movies.isnull().head())
     ic(movies.isnull().sum().head())
     ic(movies.isnull().sum().sum())
+    ic(movies.isnull().any().head())
     ic(movies.isnull().any().any())
     ic(movies.isnull().dtypes.value_counts())
-    ic(movies[["color", "movie_title", "color"]].max())
+
+    # Dropping of nuisance columns in DataFrame reductions(with 'numeric_only=None') is deprecated
+    # ic(movies[["color", "movie_title", "color"]].max())
+    ic(movies.apply(pd.to_numeric, args=["coerce"])[["color", "movie_title", "color"]].max())
 
     with pd.option_context("max_colwidth", 20):
         ic(movies.select_dtypes(["object"]).fillna("").max())
-    with pd.option_context("max_colwidth", 20):
-        ic(movies.select_dtypes(["object"]).fillna("").max())
 
-# # ## DataFrame Operations
-#
+    ## DataFrame Operations
+    colleges = pd.read_csv("data/college.csv")
+    # can only concatenate str (not "int") to str
+    # ic(colleges + 5)
 
-# colleges = pd.read_csv('data/college.csv')
-# colleges + 5
+    colleges = pd.read_csv("data/college.csv", index_col="INSTNM")
+    college_ugds = colleges.filter(like="UGDS_")
+    ic(college_ugds.head())
 
-# colleges = pd.read_csv('data/college.csv', index_col='INSTNM')
-# college_ugds = colleges.filter(like='UGDS_')
-# college_ugds.head()
+    name = "Northwest-Shoals Community College"
+    ic(college_ugds.loc[name])
+    ic(college_ugds.loc[name].round(2))
+    ic((college_ugds.loc[name] + 0.0001).round(2))
+    ic(college_ugds + 0.00501)
+    ic((college_ugds + 0.00501) // 0.01)
 
-# name = 'Northwest-Shoals Community College'
-# college_ugds.loc[name]
+    college_ugds_op_round = (college_ugds + 0.00501) // 0.01 / 100
+    ic(college_ugds_op_round.head())
+    college_ugds_round = (college_ugds + 0.00001).round(2)
+    ic(college_ugds_round)
+    ic(college_ugds_op_round.equals(college_ugds_round))
+    ic(0.045 + 0.005)
+    college2 = college_ugds.add(0.00501).floordiv(0.01).div(100)
+    ic(college2.equals(college_ugds_op_round))
 
-# college_ugds.loc[name].round(2)
+    ## Comparing Missing Values
+    ic(np.nan == np.nan)
+    ic(None is None)
+    ic(np.nan > 5)
+    ic(5 > np.nan)
+    ic(np.nan != 5)
 
-# (college_ugds.loc[name] + .0001).round(2)
+    college = pd.read_csv("data/college.csv", index_col="INSTNM")
+    college_ugds = college.filter(like="UGDS_")
 
-# college_ugds + .00501
+    ic(college_ugds == 0.0019)
+    college_self_compare = college_ugds == college_ugds
+    ic(college_self_compare.head())
+    ic(college_self_compare.all())
+    ic((college_ugds == np.nan).sum())
+    ic(college_ugds.isnull().sum())
+    ic(college_ugds.equals(college_ugds))
+    ic(college_ugds.eq(0.0019))  # same as college_ugds == .0019
 
-# (college_ugds + .00501) // .01
+    from pandas.testing import assert_frame_equal
 
-# college_ugds_op_round = (college_ugds + .00501) // .01 / 100
-# college_ugds_op_round.head()
+    ic(assert_frame_equal(college_ugds, college_ugds) is None)
 
-# college_ugds_round = (college_ugds + .00001).round(2)
-# college_ugds_round
+    ## Transposing the direction of a DataFrame operation
+    college = pd.read_csv("data/college.csv", index_col="INSTNM")
+    college_ugds = college.filter(like="UGDS_")
+    ic(college_ugds.head())
+    ic(college_ugds.count())
+    ic(college_ugds.count(axis="columns").head())
+    ic(college_ugds.sum(axis="columns").head())
+    ic(college_ugds.median(axis="index"))
 
-# college_ugds_op_round.equals(college_ugds_round)
-# # ### How it works\...
-#
+    college_ugds_cumsum = college_ugds.cumsum(axis=1)
+    ic(college_ugds_cumsum.head())
 
-# .045 + .005
-# # ### There\'s more\...
-#
+    ## Determining college campus diversity
+    college = pd.read_csv("data/college.csv", index_col="INSTNM")
+    college_ugds = college.filter(like="UGDS_")
 
-# college2 = (college_ugds
-#     .add(.00501)
-#     .floordiv(.01)
-#     .div(100)
-# )
-# college2.equals(college_ugds_op_round)
-# # ### See also
-#
-# # ## Comparing Missing Values
-#
+    ic(college_ugds.isnull().sum(axis="columns").sort_values(ascending=False).head())
+    college_ugds = college_ugds.dropna(how="all")
+    ic(college_ugds.isnull().sum())
+    ic(college_ugds.ge(0.15))
 
-# np.nan == np.nan
+    diversity_metric = college_ugds.ge(0.15).sum(axis="columns")
+    ic(diversity_metric.head())
+    ic(diversity_metric.value_counts())
+    ic(diversity_metric.sort_values(ascending=False).head())
+    ic(college_ugds.loc[["Regency Beauty Institute-Austin", "Central Texas Beauty College-Temple"]])
 
-# None == None
-
-# np.nan > 5
-
-# 5 > np.nan
-
-# np.nan != 5
-# # ### Getting ready
-#
-
-# college = pd.read_csv('data/college.csv', index_col='INSTNM')
-# college_ugds = college.filter(like='UGDS_')
-
-# college_ugds == .0019
-
-# college_self_compare = college_ugds == college_ugds
-# college_self_compare.head()
-
-# college_self_compare.all()
-
-# (college_ugds == np.nan).sum()
-
-# college_ugds.isnull().sum()
-
-# college_ugds.equals(college_ugds)
-# # ### How it works\...
-#
-# # ### There\'s more\...
-#
-
-# college_ugds.eq(.0019)    # same as college_ugds == .0019
-
-# from pandas.testing import assert_frame_equal
-# assert_frame_equal(college_ugds, college_ugds) is None
-# # ## Transposing the direction of a DataFrame operation
-#
-# # ### How to do it\...
-#
-
-# college = pd.read_csv('data/college.csv', index_col='INSTNM')
-# college_ugds = college.filter(like='UGDS_')
-# college_ugds.head()
-
-# college_ugds.count()
-
-# college_ugds.count(axis='columns').head()
-
-# college_ugds.sum(axis='columns').head()
-
-# college_ugds.median(axis='index')
-# # ### How it works\...
-#
-# # ### There\'s more\...
-#
-
-# college_ugds_cumsum = college_ugds.cumsum(axis=1)
-# college_ugds_cumsum.head()
-# # ### See also
-#
-# # ## Determining college campus diversity
-#
-
-# pd.read_csv('data/college_diversity.csv', index_col='School')
-# # ### How to do it\...
-#
-
-# college = pd.read_csv('data/college.csv', index_col='INSTNM')
-# college_ugds = college.filter(like='UGDS_')
-
-# (college_ugds.isnull()
-#    .sum(axis='columns')
-#    .sort_values(ascending=False)
-#    .head()
-# )
-
-# college_ugds = college_ugds.dropna(how='all')
-# college_ugds.isnull().sum()
-
-# college_ugds.ge(.15)
-
-# diversity_metric = college_ugds.ge(.15).sum(axis='columns')
-# diversity_metric.head()
-
-# diversity_metric.value_counts()
-
-# diversity_metric.sort_values(ascending=False).head()
-
-# college_ugds.loc[['Regency Beauty Institute-Austin',
-#                    'Central Texas Beauty College-Temple']]
-
-# us_news_top = ['Rutgers University-Newark',
-#                   'Andrews University',
-#                   'Stanford University',
-#                   'University of Houston',
-#                   'University of Nevada-Las Vegas']
-# diversity_metric.loc[us_news_top]
-# # ### How it works\...
-#
-# # ### There\'s more\...
-#
-
-# (college_ugds
-#    .max(axis=1)
-#    .sort_values(ascending=False)
-#    .head(10)
-# )
-
-# (college_ugds > .01).all(axis=1).any()
-# # ### See also
+    us_news_top = [
+        "Rutgers University-Newark",
+        "Andrews University",
+        "Stanford University",
+        "University of Houston",
+        "University of Nevada-Las Vegas",
+    ]
+    ic(diversity_metric.loc[us_news_top])
+    ic(college_ugds.max(axis=1).sort_values(ascending=False).head(10))
+    ic((college_ugds > 0.01).all(axis=1).any())
