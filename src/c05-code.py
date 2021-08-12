@@ -1,45 +1,55 @@
 import pandas as pd
 import numpy as np
 import scipy.stats as ss
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from icecream import ic
 
 pd.set_option("max_columns", 4, "max_rows", 10, "max_colwidth", 12)
 
 
 if __name__ == "__main__":
-    fueleco = pd.read_csv("data/vehicles.csv.zip")
-    ic(fueleco)
-    fueleco.mean()
-    fueleco.std()
-    fueleco.quantile([0, 0.25, 0.5, 0.75, 1])
-    fueleco.describe()
-    fueleco.describe(include=object)
-    ic(fueleco.describe().T)
+    fueleco = pd.read_csv("data/vehicles.csv.zip", low_memory=False)
+    # fueleco = fueleco.select_dtypes(["object"]).fillna("")
+    ic(fueleco.info())
     ic(fueleco.dtypes)
-    fueleco.dtypes.value_counts()
+    ic(fueleco.dtypes.value_counts())
+    ic(fueleco.isna().sum())
+    ic(fueleco.isna().any().sum())
+    fueleco_cols = fueleco.columns[fueleco.isna().any()]
+    ic(fueleco_cols)
+    # fueleco = fueleco[fueleco_cols]
+
+    ic(fueleco.mean(numeric_only=True))
+    ic(fueleco.std(numeric_only=True))
+    ic(fueleco.select_dtypes(include="number").quantile([0, 0.25, 0.5, 0.75, 1]))
+    ic(fueleco.describe())
+    ic(fueleco.describe(include=object))
+    ic(fueleco.describe().T)
     ic(fueleco.select_dtypes("int64").describe().T)
-    np.iinfo(np.int8)
-    np.iinfo(np.int16)
+    ic(np.iinfo(np.int8))
+    ic(np.iinfo(np.int16))
     fueleco[["city08", "comb08"]].info()
     ic(
         fueleco[["city08", "comb08"]]
         .assign(city08=fueleco.city08.astype(np.int16), comb08=fueleco.comb08.astype(np.int16))
         .info()
     )
-    fueleco.make.nunique()
-    fueleco.model.nunique()
+    ic(fueleco.make.nunique())
+    ic(fueleco.model.nunique())
     fueleco[["make"]].info()
-    ic(fueleco[["make"]].assign(make=fueleco.make.astype("category")).info())
+    fueleco[["make"]].assign(make=fueleco.make.astype("category")).info()
 
     fueleco[["model"]].info()
-    ic(fueleco[["model"]].assign(model=fueleco.model.astype("category")).info())
+    fueleco[["model"]].assign(model=fueleco.model.astype("category")).info()
 
     ic(fueleco.select_dtypes(object).columns)
-    fueleco.drive.nunique()
-    fueleco.drive.sample(5, random_state=42)
-    fueleco.drive.isna().sum()
-    fueleco.drive.isna().mean() * 100
-    fueleco.drive.value_counts()
+    ic(fueleco.drive.nunique())
+    ic(fueleco.drive.sample(5, random_state=42))
+    ic(fueleco.drive.isna().sum())
+    ic(fueleco.drive.isna().mean() * 100)
+    ic(fueleco.drive.value_counts())
     top_n = fueleco.make.value_counts().index[:6]
     ic(
         fueleco.assign(
@@ -47,138 +57,61 @@ if __name__ == "__main__":
         ).make.value_counts()
     )
 
-    # In[29]:
-    #
-    #
-    # import matplotlib.pyplot as plt
-    # fig, ax = plt.subplots(figsize=(10, 8))
-    # top_n = fueleco.make.value_counts().index[:6]
-    # (fueleco     # doctest: +SKIP
-    #    .assign(make=fueleco.make.where(
-    #               fueleco.make.isin(top_n),
-    #               'Other'))
-    #    .make
-    #    .value_counts()
-    #    .plot.bar(ax=ax)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    top_n = fueleco.make.value_counts().index[:6]
+    ic(
+        fueleco.assign(make=fueleco.make.where(fueleco.make.isin(top_n), "Other"))
+        .make.value_counts()
+        .plot.bar(ax=ax)
+    )
+    fig.savefig("images/ch05/c5-catpan.png", dpi=300)
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    top_n = fueleco.make.value_counts().index[:6]
+    sns.countplot(
+        y="make",
+        data=(fueleco.assign(make=fueleco.make.where(fueleco.make.isin(top_n), "Other"))),
+    )
+    fig.savefig("images/ch05/c5-catsns.png", dpi=300)
+
+    # ic(fueleco[fueleco.drive.isna()])
+    # ic(fueleco.drive.value_counts(dropna=False))
+    # ic(fueleco.rangeA.value_counts())
+    # ic(
+    #     fueleco.rangeA.str.extract(r"([^0-9.])")
+    #     .dropna()
+    #     .apply(lambda row: "".join(row), axis=1)
+    #     .value_counts()
     # )
-    # fig.savefig('/tmp/c5-catpan.png', dpi=300)     # doctest: +SKIP
-    #
-    #
-    # # In[30]:
-    #
-    #
-    # import seaborn as sns
-    # fig, ax = plt.subplots(figsize=(10, 8))
-    # top_n = fueleco.make.value_counts().index[:6]
-    # sns.countplot(y='make',     # doctest: +SKIP
-    #   data= (fueleco
-    #    .assign(make=fueleco.make.where(
-    #               fueleco.make.isin(top_n),
-    #               'Other'))
-    #   )
+    # ic(set(fueleco.rangeA.apply(type)))
+    # ic(fueleco.rangeA.isna().sum())
+    # ic(
+    #     fueleco.rangeA.fillna("0")
+    #     .str.replace("-", "/")
+    #     .str.split("/", expand=True)
+    #     .astype(float)
+    #     .mean(axis=1)
     # )
-    # fig.savefig('/tmp/c5-catsns.png', dpi=300)    # doctest: +SKIP
-    #
-    #
-    # # ### How it works...
-    #
-    # # In[31]:
-    #
-    #
-    # fueleco[fueleco.drive.isna()]
-    #
-    #
-    # # In[32]:
-    #
-    #
-    # fueleco.drive.value_counts(dropna=False)
-    #
-    #
-    # # ### There's more...
-    #
-    # # In[33]:
-    #
-    #
-    # fueleco.rangeA.value_counts()
-    #
-    #
-    # # In[34]:
-    #
-    #
-    # (fueleco
-    #  .rangeA
-    #  .str.extract(r'([^0-9.])')
-    #  .dropna()
-    #  .apply(lambda row: ''.join(row), axis=1)
-    #  .value_counts()
+    # ic(
+    #     fueleco.rangeA.fillna("0")
+    #     .str.replace("-", "/")
+    #     .str.split("/", expand=True)
+    #     .astype(float)
+    #     .mean(axis=1)
+    #     .pipe(lambda ser_: pd.cut(ser_, 10))
+    #     .value_counts()
     # )
-    #
-    #
-    # # In[35]:
-    #
-    #
-    # set(fueleco.rangeA.apply(type))
-    #
-    #
-    # # In[36]:
-    #
-    #
-    # fueleco.rangeA.isna().sum()
-    #
-    #
-    # # In[37]:
-    #
-    #
-    # (fueleco
-    #   .rangeA
-    #   .fillna('0')
-    #   .str.replace('-', '/')
-    #   .str.split('/', expand=True)
-    #   .astype(float)
-    #   .mean(axis=1)
+    # ic(
+    #     fueleco.rangeA.fillna("0")
+    #     .str.replace("-", "/")
+    #     .str.split("/", expand=True)
+    #     .astype(float)
+    #     .mean(axis=1)
+    #     .pipe(lambda ser_: pd.qcut(ser_, 10))
+    #     .value_counts()
     # )
-    #
-    #
-    # # In[38]:
-    #
-    #
-    # (fueleco
-    #   .rangeA
-    #   .fillna('0')
-    #   .str.replace('-', '/')
-    #   .str.split('/', expand=True)
-    #   .astype(float)
-    #   .mean(axis=1)
-    #   .pipe(lambda ser_: pd.cut(ser_, 10))
-    #   .value_counts()
-    # )
-    #
-    #
-    # # In[39]:
-    #
-    #
-    # (fueleco
-    #   .rangeA
-    #   .fillna('0')
-    #   .str.replace('-', '/')
-    #   .str.split('/', expand=True)
-    #   .astype(float)
-    #   .mean(axis=1)
-    #   .pipe(lambda ser_: pd.qcut(ser_, 10))
-    #   .value_counts()
-    # )
-    #
-    #
-    # # In[40]:
-    #
-    #
-    # (fueleco
-    #   .city08
-    #   .pipe(lambda ser: pd.qcut(ser, q=10))
-    #   .value_counts()
-    # )
-    #
-    #
+    # ic(fueleco.city08.pipe(lambda ser: pd.qcut(ser, q=10)).value_counts())
+
     # # ## Continuous Data
     #
     # # ### How to do it...
@@ -219,7 +152,7 @@ if __name__ == "__main__":
     # import matplotlib.pyplot as plt
     # fig, ax = plt.subplots(figsize=(10, 8))
     # fueleco.city08.hist(ax=ax)
-    # fig.savefig('/tmp/c5-conthistpan.png', dpi=300)     # doctest: +SKIP
+    # fig.savefig('images/ch05/c5-conthistpan.png', dpi=300)
     #
     #
     # # In[47]:
@@ -228,7 +161,7 @@ if __name__ == "__main__":
     # import matplotlib.pyplot as plt
     # fig, ax = plt.subplots(figsize=(10, 8))
     # fueleco.city08.hist(ax=ax, bins=30)
-    # fig.savefig('/tmp/c5-conthistpanbins.png', dpi=300)     # doctest: +SKIP
+    # fig.savefig('images/ch05/c5-conthistpanbins.png', dpi=300)
     #
     #
     # # In[48]:
@@ -236,7 +169,7 @@ if __name__ == "__main__":
     #
     # fig, ax = plt.subplots(figsize=(10, 8))
     # sns.distplot(fueleco.city08, rug=True, ax=ax)
-    # fig.savefig('/tmp/c5-conthistsns.png', dpi=300)     # doctest: +SKIP
+    # fig.savefig('images/ch05/c5-conthistsns.png', dpi=300)
     #
     #
     # # ### How it works...
@@ -250,7 +183,7 @@ if __name__ == "__main__":
     # sns.boxplot(fueleco.city08, ax=axs[0])
     # sns.violinplot(fueleco.city08, ax=axs[1])
     # sns.boxenplot(fueleco.city08, ax=axs[2])
-    # fig.savefig('/tmp/c5-contothersns.png', dpi=300)
+    # fig.savefig('images/ch05/c5-contothersns.png', dpi=300)
     #
     #
     # # In[50]:
@@ -266,7 +199,7 @@ if __name__ == "__main__":
     # from scipy import stats
     # fig, ax = plt.subplots(figsize=(10, 8))
     # stats.probplot(fueleco.city08, plot=ax)
-    # fig.savefig('/tmp/c5-conprob.png', dpi=300)
+    # fig.savefig('images/ch05/c5-conprob.png', dpi=300)
     #
     #
     # # ## Comparing Continuous Values across Categories
@@ -285,7 +218,7 @@ if __name__ == "__main__":
     #
     # g = sns.catplot(x='make', y='city08',
     #   data=fueleco[mask], kind='box')
-    # g.ax.figure.savefig('/tmp/c5-catbox.png', dpi=300)
+    # g.ax.figure.savefig('images/ch05/c5-catbox.png', dpi=300)
     #
     #
     # # ### How it works...
@@ -309,9 +242,9 @@ if __name__ == "__main__":
     #
     # g = sns.catplot(x='make', y='city08',
     #   data=fueleco[mask], kind='box')
-    # sns.swarmplot(x='make', y='city08',    # doctest: +SKIP
+    # sns.swarmplot(x='make', y='city08',
     #   data=fueleco[mask], color='k', size=1, ax=g.ax)
-    # g.ax.figure.savefig('/tmp/c5-catbox2.png', dpi=300)    # doctest: +SKIP
+    # g.ax.figure.savefig('images/ch05/c5-catbox2.png', dpi=300)
     #
     #
     # # In[56]:
@@ -321,7 +254,7 @@ if __name__ == "__main__":
     #   data=fueleco[mask], kind='box',
     #   col='year', col_order=[2012, 2014, 2016, 2018],
     #   col_wrap=2)
-    # g.axes[0].figure.savefig('/tmp/c5-catboxcol.png', dpi=300)    # doctest: +SKIP
+    # g.axes[0].figure.savefig('images/ch05/c5-catboxcol.png', dpi=300)
     #
     #
     # # In[57]:
@@ -330,7 +263,7 @@ if __name__ == "__main__":
     # g = sns.catplot(x='make', y='city08', # doctest: +SKIP
     #   data=fueleco[mask], kind='box',
     #   hue='year', hue_order=[2012, 2014, 2016, 2018])
-    # g.ax.figure.savefig('/tmp/c5-catboxhue.png', dpi=300)    # doctest: +SKIP
+    # g.ax.figure.savefig('images/ch05/c5-catboxhue.png', dpi=300)
     #
     #
     # # In[58]:
@@ -391,7 +324,7 @@ if __name__ == "__main__":
     # sns.heatmap(corr, mask=mask,
     #     fmt='.2f', annot=True, ax=ax, cmap='RdBu', vmin=-1, vmax=1,
     #     square=True)
-    # fig.savefig('/tmp/c5-heatmap.png', dpi=300, bbox_inches='tight')
+    # fig.savefig('images/ch05/c5-heatmap.png', dpi=300, bbox_inches='tight')
     #
     #
     # # In[65]:
@@ -399,7 +332,7 @@ if __name__ == "__main__":
     #
     # fig, ax = plt.subplots(figsize=(8,8))
     # fueleco.plot.scatter(x='city08', y='highway08', alpha=.1, ax=ax)
-    # fig.savefig('/tmp/c5-scatpan.png', dpi=300, bbox_inches='tight')
+    # fig.savefig('images/ch05/c5-scatpan.png', dpi=300, bbox_inches='tight')
     #
     #
     # # In[66]:
@@ -407,7 +340,7 @@ if __name__ == "__main__":
     #
     # fig, ax = plt.subplots(figsize=(8,8))
     # fueleco.plot.scatter(x='city08', y='cylinders', alpha=.1, ax=ax)
-    # fig.savefig('/tmp/c5-scatpan-cyl.png', dpi=300, bbox_inches='tight')
+    # fig.savefig('images/ch05/c5-scatpan-cyl.png', dpi=300, bbox_inches='tight')
     #
     #
     # # In[67]:
@@ -423,14 +356,14 @@ if __name__ == "__main__":
     # (fueleco
     #  .assign(cylinders=fueleco.cylinders.fillna(0))
     #  .plot.scatter(x='city08', y='cylinders', alpha=.1, ax=ax))
-    # fig.savefig('/tmp/c5-scatpan-cyl0.png', dpi=300, bbox_inches='tight')
+    # fig.savefig('images/ch05/c5-scatpan-cyl0.png', dpi=300, bbox_inches='tight')
     #
     #
     # # In[69]:
     #
     #
     # res = sns.lmplot(x='city08', y='highway08', data=fueleco)
-    # res.fig.savefig('/tmp/c5-lmplot.png', dpi=300, bbox_inches='tight')
+    # res.fig.savefig('images/ch05/c5-lmplot.png', dpi=300, bbox_inches='tight')
     #
     #
     # # ### How it works...
@@ -456,7 +389,7 @@ if __name__ == "__main__":
     #    data=fueleco.assign(
     #        cylinders=fueleco.cylinders.fillna(0)),
     #    hue='year', size='barrels08', alpha=.5, height=8)
-    # res.fig.savefig('/tmp/c5-relplot2.png', dpi=300, bbox_inches='tight')
+    # res.fig.savefig('images/ch05/c5-relplot2.png', dpi=300, bbox_inches='tight')
     #
     #
     # # In[73]:
@@ -467,7 +400,7 @@ if __name__ == "__main__":
     #   cylinders=fueleco.cylinders.fillna(0)),
     #   hue='year', size='barrels08', alpha=.5, height=8,
     #   col='make', col_order=['Ford', 'Tesla'])
-    # res.fig.savefig('/tmp/c5-relplot3.png', dpi=300, bbox_inches='tight')
+    # res.fig.savefig('images/ch05/c5-relplot3.png', dpi=300, bbox_inches='tight')
     #
     #
     # # In[74]:
@@ -545,11 +478,11 @@ if __name__ == "__main__":
     #  .pipe(lambda df_: pd.crosstab(df_.make, df_.SClass))
     #  .plot.bar(ax=ax)
     # )
-    # fig.savefig('/tmp/c5-bar.png', dpi=300, bbox_inches='tight')
+    # fig.savefig('images/ch05/c5-bar.png', dpi=300, bbox_inches='tight')
 
     # res = sns.catplot(kind='count',
     #    x='make', hue='SClass', data=data)
-    # res.fig.savefig('/tmp/c5-barsns.png', dpi=300, bbox_inches='tight')
+    # res.fig.savefig('images/ch05/c5-barsns.png', dpi=300, bbox_inches='tight')
 
     # fig, ax = plt.subplots(figsize=(10,8))
     # (data
@@ -557,7 +490,7 @@ if __name__ == "__main__":
     #  .pipe(lambda df_: df_.div(df_.sum(axis=1), axis=0))
     #  .plot.bar(stacked=True, ax=ax)
     # )
-    # fig.savefig('/tmp/c5-barstacked.png', dpi=300, bbox_inches='tight')
+    # fig.savefig('images/ch05/c5-barstacked.png', dpi=300, bbox_inches='tight')
 
     # cramers_v(data.make, data.trany)
     # cramers_v(data.make, data.model)
@@ -565,4 +498,4 @@ if __name__ == "__main__":
     # import pandas_profiling as pp
     # pp.ProfileReport(fueleco)
     # report = pp.ProfileReport(fueleco)
-    # report.to_file('/tmp/fuel.html')
+    # report.to_file('images/ch05/fuel.html')
