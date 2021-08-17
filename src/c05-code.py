@@ -3,6 +3,8 @@ import numpy as np
 import scipy.stats as ss
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas_profiling as pp
+
 from scipy import stats
 from icecream import ic
 
@@ -322,8 +324,6 @@ if __name__ == "__main__":
 
     ic(cramers_v(data.make, data.trany))
     ic(cramers_v(data.make, data.model))
-
-    import pandas_profiling as pp
 
     pp.ProfileReport(fueleco)
     report = pp.ProfileReport(fueleco)
