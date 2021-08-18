@@ -175,104 +175,29 @@ if __name__ == "__main__":
     ic(movie[movie["title_year"] < 2010])
     ic(movie.mask(criteria).dropna(how="all"))
 
-    # # ## Selecting with booleans, integer location, and labels
-    #
-    # # ### How to do it...
-    #
-    # # In[99]:
-    #
-    #
-    # movie = pd.read_csv('data/movie.csv', index_col='movie_title')
-    # c1 = movie['content_rating'] == 'G'
-    # c2 = movie['imdb_score'] < 4
-    # criteria = c1 & c2
-    #
-    #
-    # # In[100]:
-    #
-    #
-    # movie_loc = movie.loc[criteria]
-    # movie_loc.head()
-    #
-    #
-    # # In[101]:
-    #
-    #
-    # movie_loc.equals(movie[criteria])
-    #
-    #
-    # # In[102]:
-    #
-    #
+    ## Selecting with booleans, integer location, and labels
+    movie = pd.read_csv("data/movie.csv", index_col="movie_title")
+    c1 = movie["content_rating"] == "G"
+    c2 = movie["imdb_score"] < 4
+    criteria = c1 & c2
+    movie_loc = movie.loc[criteria]
+    ic(movie_loc.head())
+    ic(movie_loc.equals(movie[criteria]))
+    # iLocation based boolean indexing cannot use an indexable as a mask
     # movie_iloc = movie.iloc[criteria]
-    #
-    #
-    # # In[103]:
-    #
-    #
-    # movie_iloc = movie.iloc[criteria.values]
-    # movie_iloc.equals(movie_loc)
-    #
-    #
-    # # In[104]:
-    #
-    #
-    # criteria_col = movie.dtypes == np.int64
-    # criteria_col.head()
-    #
-    #
-    # # In[105]:
-    #
-    #
-    # movie.loc[:, criteria_col].head()
-    #
-    #
-    # # In[106]:
-    #
-    #
-    # movie.iloc[:, criteria_col.values].head()
-    #
-    #
-    # # In[107]:
-    #
-    #
-    # cols = ['content_rating', 'imdb_score', 'title_year', 'gross']
-    # movie.loc[criteria, cols].sort_values('imdb_score')
-    #
-    #
-    # # In[108]:
-    #
-    #
-    # col_index = [movie.columns.get_loc(col) for col in cols]
-    # col_index
-    #
-    #
-    # # In[109]:
-    #
-    #
-    # movie.iloc[criteria.values, col_index].sort_values('imdb_score')
-    #
-    #
-    # # ### How it works...
-    #
-    # # In[110]:
-    #
-    #
-    # a = criteria.values
-    # a[:5]
-    #
-    #
-    # # In[111]:
-    #
-    #
-    # len(a), len(criteria)
-    #
-    #
-    # # In[112]:
-    #
-    #
-    # movie.select_dtypes(int)
-    #
-    #
-    # # In[ ]:
-    #
+    movie_iloc = movie.iloc[criteria.values]
+    ic(movie_iloc.equals(movie_loc))
+    criteria_col = movie.dtypes == np.int64
+    ic(criteria_col.head())
+    ic(movie.loc[:, criteria_col].head())
+    ic(movie.iloc[:, criteria_col.values].head())
+
+    cols = ["content_rating", "imdb_score", "title_year", "gross"]
+    movie.loc[criteria, cols].sort_values("imdb_score")
+    col_index = [movie.columns.get_loc(col) for col in cols]
+    ic(col_index)
+    movie.iloc[criteria.values, col_index].sort_values("imdb_score")
+    a = criteria.values
+    ic(a[:5])
+    ic(len(a), len(criteria))
+    ic(movie.select_dtypes(int))
