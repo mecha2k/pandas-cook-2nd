@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     airline_info.reset_index()
 
-    (
+    ic(
         flights.groupby(["AIRLINE", "WEEKDAY"])
         .agg(
             dist_sum=pd.NamedAgg(column="DIST", aggfunc="sum"),
