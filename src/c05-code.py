@@ -72,6 +72,7 @@ if __name__ == "__main__":
     )
 
     fig, ax = plt.subplots(figsize=(8, 6))
+    ic(fueleco.make.value_counts().head(20))
     top_n = fueleco.make.value_counts().index[:5]
     ic(top_n)
     ic(fueleco.make.where(fueleco.make.isin(top_n), other="Other").value_counts(dropna=False))
@@ -168,197 +169,197 @@ if __name__ == "__main__":
     fig.savefig("images/ch05/c5-conprob.png", dpi=300)
     plt.close()
 
-    ## Comparing Continuous Values across Categories
-    mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
-    fueleco[mask].groupby("make").city08.agg(["mean", "std"])
-
-    g = sns.catplot(x="make", y="city08", data=fueleco[mask], height=5, kind="box")
-    g.ax.figure.savefig("images/ch05/c5-catbox.png", dpi=300)
-
-    mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
-    ic(fueleco[mask].groupby("make").city08.count())
-
-    g = sns.catplot(x="make", y="city08", data=fueleco[mask], height=1, kind="box")
-    sns.swarmplot(x="make", y="city08", data=fueleco[mask], color="k", size=1, ax=g.ax)
-    g.ax.figure.savefig("images/ch05/c5-catbox2.png", dpi=300)
-
-    g = sns.catplot(
-        x="make",
-        y="city08",
-        data=fueleco[mask],
-        height=1,
-        kind="box",
-        col="year",
-        col_order=[2012, 2014, 2016, 2018],
-        col_wrap=2,
-    )
-    g.axes[0].figure.savefig("images/ch05/c5-catboxcol.png", dpi=300)
-
-    g = sns.catplot(
-        x="make",
-        y="city08",
-        data=fueleco[mask],
-        height=1,
-        kind="box",
-        hue="year",
-        hue_order=[2012, 2014, 2016, 2018],
-    )
-    g.ax.figure.savefig("images/ch05/c5-catboxhue.png", dpi=300)
-    plt.close()
-
-    mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
-    ic(
-        fueleco[mask]
-        .groupby("make")
-        .city08.agg(["mean", "std"])
-        .style.background_gradient(cmap="RdBu", axis=0)
-    )
-
-    ## Comparing Two Continuous Columns
-    ic(fueleco.city08.cov(fueleco.highway08))
-    ic(fueleco.city08.cov(fueleco.comb08))
-    ic(fueleco.city08.cov(fueleco.cylinders))
-    ic(fueleco.city08.corr(fueleco.highway08))
-    ic(fueleco.city08.corr(fueleco.cylinders))
-
-    fig, ax = plt.subplots(figsize=(8, 8))
-    corr = fueleco[["city08", "highway08", "cylinders"]].corr()
-    mask = np.zeros_like(corr, dtype=bool)
-    mask[np.triu_indices_from(mask)] = True
-    sns.heatmap(
-        corr, mask=mask, fmt=".2f", annot=True, ax=ax, cmap="RdBu", vmin=-1, vmax=1, square=True
-    )
-    fig.savefig("images/ch05/c5-heatmap.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    fig, ax = plt.subplots(figsize=(8, 8))
-    fueleco.plot.scatter(x="city08", y="highway08", alpha=0.1, ax=ax)
-    fig.savefig("images/ch05/c5-scatpan.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    fig, ax = plt.subplots(figsize=(8, 8))
-    fueleco.plot.scatter(x="city08", y="cylinders", alpha=0.1, ax=ax)
-    fig.savefig("images/ch05/c5-scatpan-cyl.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    ic(fueleco.cylinders.isna().sum())
-
-    fig, ax = plt.subplots(figsize=(8, 8))
-    (
-        fueleco.assign(cylinders=fueleco.cylinders.fillna(0)).plot.scatter(
-            x="city08", y="cylinders", alpha=0.1, ax=ax
-        )
-    )
-    fig.savefig("images/ch05/c5-scatpan-cyl0.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    res = sns.lmplot(x="city08", y="highway08", data=fueleco)
-    res.fig.savefig("images/ch05/c5-lmplot.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    ic(fueleco.city08.corr(fueleco.highway08 * 2))
-    ic(fueleco.city08.cov(fueleco.highway08 * 2))
-
-    res = sns.relplot(
-        x="city08",
-        y="highway08",
-        data=fueleco.assign(cylinders=fueleco.cylinders.fillna(0)),
-        hue="year",
-        size="barrels08",
-        alpha=0.5,
-        height=8,
-    )
-    res.fig.savefig("images/ch05/c5-relplot2.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    res = sns.relplot(
-        x="city08",
-        y="highway08",
-        data=fueleco.assign(cylinders=fueleco.cylinders.fillna(0)),
-        hue="year",
-        size="barrels08",
-        alpha=0.5,
-        height=8,
-        col="make",
-        col_order=["Ford", "Tesla"],
-    )
-    res.fig.savefig("images/ch05/c5-relplot3.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    ic(fueleco.city08.corr(fueleco.barrels08, method="spearman"))
-
-    ## Comparing Categorical and Categorical Values
-
-    def generalize(ser, match_name, default):
-        seen = None
-        for match, name in match_name:
-            mask = ser.str.contains(match)
-            if seen is None:
-                seen = mask
-            else:
-                seen |= mask
-            ser = ser.where(~mask, name)
-        ser = ser.where(seen, default)
-        return ser
-
-    makes = ["Ford", "Tesla", "BMW", "Toyota"]
-    data = fueleco[fueleco.make.isin(makes)].assign(
-        SClass=lambda df_: generalize(
-            df_.VClass,
-            [
-                ("Seaters", "Car"),
-                ("Car", "Car"),
-                ("Utility", "SUV"),
-                ("Truck", "Truck"),
-                ("Van", "Van"),
-                ("van", "Van"),
-                ("Wagon", "Wagon"),
-            ],
-            "other",
-        )
-    )
-    ic(data.groupby(["make", "SClass"]).size().unstack())
-    ic(pd.crosstab(data.make, data.SClass))
-    ic(pd.crosstab([data.year, data.make], [data.SClass, data.VClass]))
-
-    def cramers_v(x, y):
-        confusion_matrix = pd.crosstab(x, y)
-        chi2 = ss.chi2_contingency(confusion_matrix)[0]
-        n = confusion_matrix.sum().sum()
-        phi2 = chi2 / n
-        r, k = confusion_matrix.shape
-        phi2corr = max(0, phi2 - ((k - 1) * (r - 1)) / (n - 1))
-        rcorr = r - ((r - 1) ** 2) / (n - 1)
-        kcorr = k - ((k - 1) ** 2) / (n - 1)
-        return np.sqrt(phi2corr / min((kcorr - 1), (rcorr - 1)))
-
-    ic(cramers_v(data.make, data.SClass))
-
-    fig, ax = plt.subplots(figsize=(6, 4))
-    (data.pipe(lambda df_: pd.crosstab(df_.make, df_.SClass)).plot.bar(ax=ax))
-    fig.savefig("images/ch05/c5-bar.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    res = sns.catplot(kind="count", x="make", hue="SClass", data=data)
-    res.fig.savefig("images/ch05/c5-barsns.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    fig, ax = plt.subplots(figsize=(6, 4))
-    (
-        data.pipe(lambda df_: pd.crosstab(df_.make, df_.SClass))
-        .pipe(lambda df_: df_.div(df_.sum(axis=1), axis=0))
-        .plot.bar(stacked=True, ax=ax)
-    )
-    fig.savefig("images/ch05/c5-barstacked.png", dpi=300, bbox_inches="tight")
-    plt.close()
-
-    ic(cramers_v(data.make, data.trany))
-    ic(cramers_v(data.make, data.model))
-
-    profile = pp.ProfileReport(
-        fueleco,
-        title="Pandas Profiling",
-        minimal=True,
-        correlations={"kendall": {"calculate": False}, "cramers": {"calculate": False}},
-    )
-    profile.to_file("images/ch05/fuel.html")
+    # ## Comparing Continuous Values across Categories
+    # mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
+    # fueleco[mask].groupby("make").city08.agg(["mean", "std"])
+    #
+    # g = sns.catplot(x="make", y="city08", data=fueleco[mask], height=5, kind="box")
+    # g.ax.figure.savefig("images/ch05/c5-catbox.png", dpi=300)
+    #
+    # mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
+    # ic(fueleco[mask].groupby("make").city08.count())
+    #
+    # g = sns.catplot(x="make", y="city08", data=fueleco[mask], height=1, kind="box")
+    # sns.swarmplot(x="make", y="city08", data=fueleco[mask], color="k", size=1, ax=g.ax)
+    # g.ax.figure.savefig("images/ch05/c5-catbox2.png", dpi=300)
+    #
+    # g = sns.catplot(
+    #     x="make",
+    #     y="city08",
+    #     data=fueleco[mask],
+    #     height=1,
+    #     kind="box",
+    #     col="year",
+    #     col_order=[2012, 2014, 2016, 2018],
+    #     col_wrap=2,
+    # )
+    # g.axes[0].figure.savefig("images/ch05/c5-catboxcol.png", dpi=300)
+    #
+    # g = sns.catplot(
+    #     x="make",
+    #     y="city08",
+    #     data=fueleco[mask],
+    #     height=1,
+    #     kind="box",
+    #     hue="year",
+    #     hue_order=[2012, 2014, 2016, 2018],
+    # )
+    # g.ax.figure.savefig("images/ch05/c5-catboxhue.png", dpi=300)
+    # plt.close()
+    #
+    # mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
+    # ic(
+    #     fueleco[mask]
+    #     .groupby("make")
+    #     .city08.agg(["mean", "std"])
+    #     .style.background_gradient(cmap="RdBu", axis=0)
+    # )
+    #
+    # ## Comparing Two Continuous Columns
+    # ic(fueleco.city08.cov(fueleco.highway08))
+    # ic(fueleco.city08.cov(fueleco.comb08))
+    # ic(fueleco.city08.cov(fueleco.cylinders))
+    # ic(fueleco.city08.corr(fueleco.highway08))
+    # ic(fueleco.city08.corr(fueleco.cylinders))
+    #
+    # fig, ax = plt.subplots(figsize=(8, 8))
+    # corr = fueleco[["city08", "highway08", "cylinders"]].corr()
+    # mask = np.zeros_like(corr, dtype=bool)
+    # mask[np.triu_indices_from(mask)] = True
+    # sns.heatmap(
+    #     corr, mask=mask, fmt=".2f", annot=True, ax=ax, cmap="RdBu", vmin=-1, vmax=1, square=True
+    # )
+    # fig.savefig("images/ch05/c5-heatmap.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # fig, ax = plt.subplots(figsize=(8, 8))
+    # fueleco.plot.scatter(x="city08", y="highway08", alpha=0.1, ax=ax)
+    # fig.savefig("images/ch05/c5-scatpan.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # fig, ax = plt.subplots(figsize=(8, 8))
+    # fueleco.plot.scatter(x="city08", y="cylinders", alpha=0.1, ax=ax)
+    # fig.savefig("images/ch05/c5-scatpan-cyl.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # ic(fueleco.cylinders.isna().sum())
+    #
+    # fig, ax = plt.subplots(figsize=(8, 8))
+    # (
+    #     fueleco.assign(cylinders=fueleco.cylinders.fillna(0)).plot.scatter(
+    #         x="city08", y="cylinders", alpha=0.1, ax=ax
+    #     )
+    # )
+    # fig.savefig("images/ch05/c5-scatpan-cyl0.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # res = sns.lmplot(x="city08", y="highway08", data=fueleco)
+    # res.fig.savefig("images/ch05/c5-lmplot.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # ic(fueleco.city08.corr(fueleco.highway08 * 2))
+    # ic(fueleco.city08.cov(fueleco.highway08 * 2))
+    #
+    # res = sns.relplot(
+    #     x="city08",
+    #     y="highway08",
+    #     data=fueleco.assign(cylinders=fueleco.cylinders.fillna(0)),
+    #     hue="year",
+    #     size="barrels08",
+    #     alpha=0.5,
+    #     height=8,
+    # )
+    # res.fig.savefig("images/ch05/c5-relplot2.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # res = sns.relplot(
+    #     x="city08",
+    #     y="highway08",
+    #     data=fueleco.assign(cylinders=fueleco.cylinders.fillna(0)),
+    #     hue="year",
+    #     size="barrels08",
+    #     alpha=0.5,
+    #     height=8,
+    #     col="make",
+    #     col_order=["Ford", "Tesla"],
+    # )
+    # res.fig.savefig("images/ch05/c5-relplot3.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # ic(fueleco.city08.corr(fueleco.barrels08, method="spearman"))
+    #
+    # ## Comparing Categorical and Categorical Values
+    #
+    # def generalize(ser, match_name, default):
+    #     seen = None
+    #     for match, name in match_name:
+    #         mask = ser.str.contains(match)
+    #         if seen is None:
+    #             seen = mask
+    #         else:
+    #             seen |= mask
+    #         ser = ser.where(~mask, name)
+    #     ser = ser.where(seen, default)
+    #     return ser
+    #
+    # makes = ["Ford", "Tesla", "BMW", "Toyota"]
+    # data = fueleco[fueleco.make.isin(makes)].assign(
+    #     SClass=lambda df_: generalize(
+    #         df_.VClass,
+    #         [
+    #             ("Seaters", "Car"),
+    #             ("Car", "Car"),
+    #             ("Utility", "SUV"),
+    #             ("Truck", "Truck"),
+    #             ("Van", "Van"),
+    #             ("van", "Van"),
+    #             ("Wagon", "Wagon"),
+    #         ],
+    #         "other",
+    #     )
+    # )
+    # ic(data.groupby(["make", "SClass"]).size().unstack())
+    # ic(pd.crosstab(data.make, data.SClass))
+    # ic(pd.crosstab([data.year, data.make], [data.SClass, data.VClass]))
+    #
+    # def cramers_v(x, y):
+    #     confusion_matrix = pd.crosstab(x, y)
+    #     chi2 = ss.chi2_contingency(confusion_matrix)[0]
+    #     n = confusion_matrix.sum().sum()
+    #     phi2 = chi2 / n
+    #     r, k = confusion_matrix.shape
+    #     phi2corr = max(0, phi2 - ((k - 1) * (r - 1)) / (n - 1))
+    #     rcorr = r - ((r - 1) ** 2) / (n - 1)
+    #     kcorr = k - ((k - 1) ** 2) / (n - 1)
+    #     return np.sqrt(phi2corr / min((kcorr - 1), (rcorr - 1)))
+    #
+    # ic(cramers_v(data.make, data.SClass))
+    #
+    # fig, ax = plt.subplots(figsize=(6, 4))
+    # (data.pipe(lambda df_: pd.crosstab(df_.make, df_.SClass)).plot.bar(ax=ax))
+    # fig.savefig("images/ch05/c5-bar.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # res = sns.catplot(kind="count", x="make", hue="SClass", data=data)
+    # res.fig.savefig("images/ch05/c5-barsns.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # fig, ax = plt.subplots(figsize=(6, 4))
+    # (
+    #     data.pipe(lambda df_: pd.crosstab(df_.make, df_.SClass))
+    #     .pipe(lambda df_: df_.div(df_.sum(axis=1), axis=0))
+    #     .plot.bar(stacked=True, ax=ax)
+    # )
+    # fig.savefig("images/ch05/c5-barstacked.png", dpi=300, bbox_inches="tight")
+    # plt.close()
+    #
+    # ic(cramers_v(data.make, data.trany))
+    # ic(cramers_v(data.make, data.model))
+    #
+    # profile = pp.ProfileReport(
+    #     fueleco,
+    #     title="Pandas Profiling",
+    #     minimal=True,
+    #     correlations={"kendall": {"calculate": False}, "cramers": {"calculate": False}},
+    # )
+    # profile.to_file("images/ch05/fuel.html")
