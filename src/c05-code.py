@@ -11,6 +11,18 @@ from icecream import ic
 
 pd.set_option("max_columns", 4, "max_rows", 10, "max_colwidth", 12)
 
+# ic(plt.rcParams.keys())
+params = {
+    "axes.labelsize": 12,
+    "axes.titlesize": 12,
+    "figure.titlesize": 14,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "legend.fontsize": 10,
+    "legend.title_fontsize": 10,
+}
+plt.rcParams.update(params)
+
 dir_path = "images/ch05"
 for file in os.listdir(dir_path):
     os.remove(os.path.join(dir_path, file))
@@ -18,11 +30,11 @@ for file in os.listdir(dir_path):
 
 if __name__ == "__main__":
     fueleco = pd.read_csv("data/vehicles.csv.zip", low_memory=False)
-    fueleco.info()
 
+    fueleco.info()
     ic(fueleco.select_dtypes(include="object").info())
-    # fueleco1 = fueleco.select_dtypes(["object"]).fillna("")
-    # fueleco1.info()
+    fueleco1 = fueleco.select_dtypes(["object"]).fillna("")
+    fueleco1.info()
     ic(fueleco.dtypes)
     ic(type(fueleco.dtypes))
     ic(fueleco.dtypes.value_counts())
@@ -104,6 +116,7 @@ if __name__ == "__main__":
     )
     ic(set(fueleco.rangeA.apply(type)))
     ic(fueleco.rangeA.isna().sum())
+    ic(fueleco.rangeA.fillna("0").str.replace("-", "/").str.split(pat="/", expand=True))
     ic(
         fueleco.rangeA.fillna("0")
         .str.replace("-", "/")
@@ -111,16 +124,27 @@ if __name__ == "__main__":
         .astype(float)
         .mean(axis=1)
     )
+    fuel_cut = (
+        fueleco.rangeA.fillna("0")
+        .str.replace("-", "/")
+        .str.split("/", expand=True)
+        .astype(float)
+        .mean(axis=1)
+    )
+    ic(fuel_cut.max(), fuel_cut.min())
+    # pandas categories type
+    ic(pd.cut(fuel_cut, bins=10))
+    ic(pd.cut(fuel_cut, bins=10).value_counts(dropna=False))
     ic(
         fueleco.rangeA.fillna("0")
         .str.replace("-", "/")
         .str.split("/", expand=True)
         .astype(float)
         .mean(axis=1)
-        .pipe(lambda ser_: pd.cut(ser_, 10))
+        .pipe(lambda ser_: pd.cut(ser_, bins=10))
         .value_counts()
     )
-    # ValueError : Bin edges must be unique
+    # ValueError : Bin edges must be unique (heavily skewed, and most of the entries are 0)
     # ic(
     #     fueleco.rangeA.fillna("0")
     #     .str.replace("-", "/")
@@ -130,7 +154,13 @@ if __name__ == "__main__":
     #     .pipe(lambda ser_: pd.qcut(ser_, 10))
     #     .value_counts()
     # )
-    ic(fueleco.city08.pipe(lambda ser: pd.qcut(ser, q=10)).value_counts())
+    ic(fueleco.city08.pipe(lambda x: pd.qcut(x=x, q=10)).value_counts())
+    city_sum = fueleco.city08.sum()
+    ic(
+        fueleco.city08.pipe(lambda x: pd.qcut(x=x, q=10))
+        .value_counts()
+        .pipe(lambda x: x / city_sum * 100)
+    )
 
     ## Continuous Data
     ic(fueleco.select_dtypes(include="number"))
@@ -150,18 +180,19 @@ if __name__ == "__main__":
     plt.close()
 
     fig, ax = plt.subplots(figsize=(6, 4))
+    sns.histplot(data=fueleco.city08, ax=ax, kde=True)
     sns.rugplot(data=fueleco.city08, ax=ax)
     fig.savefig("images/ch05/c5-conthistsns.png", dpi=300)
     plt.close()
 
     fig, axs = plt.subplots(nrows=3, figsize=(6, 4))
-    sns.boxplot(data=fueleco.city08, ax=axs[0])
-    sns.violinplot(data=fueleco.city08, ax=axs[1])
-    sns.boxenplot(data=fueleco.city08, ax=axs[2])
+    sns.boxplot(x=fueleco.city08, ax=axs[0], palette="Set2")
+    sns.violinplot(x=fueleco.city08, ax=axs[1])
+    sns.boxenplot(x=fueleco.city08, ax=axs[2])
     fig.savefig("images/ch05/c5-contothersns.png", dpi=300)
     plt.close()
 
-    ic(stats.kstest(fueleco.city08, cdf="norm"))
+    # ic(stats.kstest(fueleco.city08, cdf="norm"))
 
     fig, ax = plt.subplots(figsize=(6, 4))
     stats.probplot(fueleco.city08, plot=ax)
@@ -170,48 +201,54 @@ if __name__ == "__main__":
 
     ## Comparing Continuous Values across Categories
     mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
-    fueleco[mask].groupby("make").city08.agg(["mean", "std"])
+    ic(mask.value_counts())
+    ic(fueleco[mask].head())
+    ic(fueleco[mask].make.head())
+    ic(fueleco[mask].groupby("make").city08.agg(["mean", "std"]))
 
     g = sns.catplot(x="make", y="city08", data=fueleco[mask], height=5, kind="box")
+    plt.tight_layout()
     g.ax.figure.savefig("images/ch05/c5-catbox.png", dpi=300)
+    plt.close()
 
-    mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
     ic(fueleco[mask].groupby("make").city08.count())
 
-    g = sns.catplot(x="make", y="city08", data=fueleco[mask], height=1, kind="box")
-    sns.swarmplot(x="make", y="city08", data=fueleco[mask], color="k", size=1, ax=g.ax)
+    g = sns.catplot(x="make", y="city08", data=fueleco[mask], height=5, kind="box")
+    sns.stripplot(x="make", y="city08", data=fueleco[mask], color="k", size=1, ax=g.ax)
+    plt.tight_layout()
     g.ax.figure.savefig("images/ch05/c5-catbox2.png", dpi=300)
+    plt.close()
 
     g = sns.catplot(
         x="make",
         y="city08",
         data=fueleco[mask],
-        height=1,
+        height=5,
         kind="box",
         col="year",
         col_order=[2012, 2014, 2016, 2018],
         col_wrap=2,
     )
+    plt.tight_layout()
     g.axes[0].figure.savefig("images/ch05/c5-catboxcol.png", dpi=300)
+    plt.close()
 
     g = sns.catplot(
         x="make",
         y="city08",
         data=fueleco[mask],
-        height=1,
+        height=5,
         kind="box",
         hue="year",
         hue_order=[2012, 2014, 2016, 2018],
+        legend_out=False,
     )
+    plt.tight_layout()
     g.ax.figure.savefig("images/ch05/c5-catboxhue.png", dpi=300)
     plt.close()
 
-    mask = fueleco.make.isin(["Ford", "Honda", "Tesla", "BMW"])
-    ic(
-        fueleco[mask]
-        .groupby("make")
-        .city08.agg(["mean", "std"])
-        .style.background_gradient(cmap="RdBu", axis=0)
+    fueleco[mask].groupby("make").city08.agg(["mean", "std"]).style.background_gradient(
+        cmap="RdBu", axis=0
     )
 
     ## Comparing Two Continuous Columns
@@ -224,20 +261,27 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(8, 8))
     corr = fueleco[["city08", "highway08", "cylinders"]].corr()
     mask = np.zeros_like(corr, dtype=bool)
+    ic(corr)
+    ic(mask)
+    ic(np.triu_indices_from(mask))
     mask[np.triu_indices_from(mask)] = True
+    ic(mask)
     sns.heatmap(
         corr, mask=mask, fmt=".2f", annot=True, ax=ax, cmap="RdBu", vmin=-1, vmax=1, square=True
     )
+    plt.tight_layout()
     fig.savefig("images/ch05/c5-heatmap.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(8, 8))
     fueleco.plot.scatter(x="city08", y="highway08", alpha=0.1, ax=ax)
+    plt.tight_layout()
     fig.savefig("images/ch05/c5-scatpan.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     fig, ax = plt.subplots(figsize=(8, 8))
     fueleco.plot.scatter(x="city08", y="cylinders", alpha=0.1, ax=ax)
+    plt.tight_layout()
     fig.savefig("images/ch05/c5-scatpan-cyl.png", dpi=300, bbox_inches="tight")
     plt.close()
 
@@ -249,10 +293,12 @@ if __name__ == "__main__":
             x="city08", y="cylinders", alpha=0.1, ax=ax
         )
     )
+    plt.tight_layout()
     fig.savefig("images/ch05/c5-scatpan-cyl0.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     res = sns.lmplot(x="city08", y="highway08", data=fueleco)
+    plt.tight_layout()
     res.fig.savefig("images/ch05/c5-lmplot.png", dpi=300, bbox_inches="tight")
     plt.close()
 
@@ -268,6 +314,7 @@ if __name__ == "__main__":
         alpha=0.5,
         height=8,
     )
+    plt.tight_layout()
     res.fig.savefig("images/ch05/c5-relplot2.png", dpi=300, bbox_inches="tight")
     plt.close()
 
@@ -282,6 +329,7 @@ if __name__ == "__main__":
         col="make",
         col_order=["Ford", "Tesla"],
     )
+    plt.tight_layout()
     res.fig.savefig("images/ch05/c5-relplot3.png", dpi=300, bbox_inches="tight")
     plt.close()
 
@@ -336,10 +384,12 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(6, 4))
     (data.pipe(lambda df_: pd.crosstab(df_.make, df_.SClass)).plot.bar(ax=ax))
+    plt.tight_layout()
     fig.savefig("images/ch05/c5-bar.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     res = sns.catplot(kind="count", x="make", hue="SClass", data=data)
+    plt.tight_layout()
     res.fig.savefig("images/ch05/c5-barsns.png", dpi=300, bbox_inches="tight")
     plt.close()
 
@@ -349,6 +399,7 @@ if __name__ == "__main__":
         .pipe(lambda df_: df_.div(df_.sum(axis=1), axis=0))
         .plot.bar(stacked=True, ax=ax)
     )
+    plt.tight_layout()
     fig.savefig("images/ch05/c5-barstacked.png", dpi=300, bbox_inches="tight")
     plt.close()
 
