@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import pandas_profiling as pp
+
 from scipy.stats import gmean, hmean
 from icecream import ic
 
@@ -70,7 +72,7 @@ if __name__ == "__main__":
     )
     ic(res)
 
-    # ## Removing the MultiIndex after grouping
+    ## Removing the MultiIndex after grouping
     flights = pd.read_csv("data/flights.csv")
     airline_info = (
         flights.groupby(["AIRLINE", "WEEKDAY"])
@@ -445,3 +447,12 @@ if __name__ == "__main__":
     #     .apply(max_delay_streak)
     #     .sort_values("streak", ascending=False)
     # )
+
+    flights = pd.read_csv("data/flights.csv")
+    profile = pp.ProfileReport(
+        flights,
+        title="Pandas Profiling",
+        minimal=True,
+        correlations={"kendall": {"calculate": False}, "cramers": {"calculate": False}},
+    )
+    profile.to_file("data/ch09_flights.html")
